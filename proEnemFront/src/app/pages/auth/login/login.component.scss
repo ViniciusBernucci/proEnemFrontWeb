@@ -1,0 +1,18 @@
+/* Centraliza o card de login na tela */
+.center-container {
+	min-height: 100vh;
+	background-color: #fff;
+}
+
+.card-wrapper form {
+	background: #ffffff;
+	border-radius: 8px;
+}
+
+@media (max-width: 576px) {
+	.card-wrapper { max-width: 100% !important; }
+	.card-wrapper form { padding: 1rem; }
+}
+
+.auth-logo img { max-height: 48px; }
+

@@ -1,0 +1,13 @@
+/* Centraliza o card de registro de forma similar ao login */
+.main-wrapper .overflow-hidden .row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+}
+
+.col-md-10.mx-auto { max-width: 520px; }
+
+@media (max-width: 576px) {
+	.col-md-10.mx-auto { padding: 1rem; }
+}
