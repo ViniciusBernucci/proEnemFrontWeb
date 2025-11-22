@@ -2,48 +2,60 @@
     <div class="main-wrapper">
         <div class="center-container d-flex align-items-center justify-content-center vh-100 p-3">
             <div class="card-wrapper w-100" style="max-width:520px;">
-                <form (ngSubmit)="navigate()" class="d-flex flex-column p-4 bg-white rounded shadow-sm">
+                <form [formGroup]="loginForm" (ngSubmit)="navigate()" class="d-flex flex-column p-4 bg-white rounded shadow-sm">
                     <div class="text-center mb-4 auth-logo">
                         <img src="assets/img/logo.svg" class="img-fluid" alt="Logo" style="max-height:48px;">
                     </div>
+                    <!-- Alerts (use *ngIf se necessário) -->
+                    <div *ngIf="message" class="alert alert-success" role="alert">{{ message }}</div>
+                    <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
                     <div>
                         <div class="mb-3">
                             <h3 class="mb-2">Sign In</h3>
-                            <p class="mb-0">Acesse o Pro Enem com seu email e senha.</p>
+                            <p class="mb-0">Access the CRMS panel using your email and passcode.</p>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
+                            <label class="form-label">Email Address</label>
                             <div class="input-group input-group-flat">
-                                <input type="email" class="form-control">
+                                <input type="email" class="form-control"
+                                        formControlName="email"
+                                        [class.is-invalid]="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || submitted)"
+                                />
                                 <span class="input-group-text">
                                     <i class="ti ti-mail"></i>
                                 </span>
+                                <!-- Validação Angular -->
+                                <ng-container *ngIf="loginForm.get('email') as emailCtrl">
+                                  <div *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || submitted)" class="invalid-feedback d-block">Campo obrigatório.</div>
+                                  <div *ngIf="emailCtrl.hasError('whitespace') && (emailCtrl.touched || submitted)" class="invalid-feedback d-block">Não pode ser somente espaços.</div>
+                                </ng-container>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Senha</label>
+                            <label class="form-label">Password</label>
                             <div class="input-group input-group-flat pass-group">
                                 <input [type]="password[1] ? 'text' : 'password' " class="pass-input form-control">
                                 <span class="input-group-text toggle-password" (click)="togglePassword(1)" tabindex="0"><i class="ti" [ngClass]=" password[1] ? 'ti-eye' : 'ti-eye-off'"></i></span>
-                            </div>
+           
+                 </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div class="form-check form-check-md d-flex align-items-center">
                                 <input class="form-check-input mt-0" type="checkbox" value="" id="checkebox-md" checked="">
-                                <label class="form-check-label text-dark ms-1" for="checkebox-md">Manter Conectado</label>
+                                <label class="form-check-label text-dark ms-1" for="checkebox-md">Remember Me</label>
                             </div>
                             <div class="text-end">
-                                <a routerLink="/forgot-password" class="link-danger fw-medium link-hover">Esqueceu sua senha?</a>
+                                <a routerLink="/forgot-password" class="link-danger fw-medium link-hover">Forgot Password?</a>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                            <button type="submit" class="btn btn-primary w-100">Sign In</button>
                         </div>
                         <div class="mb-3">
-                            <p class="mb-0">Novo na plataforma?<a routerLink="/register" class="link-indigo fw-bold link-hover"> Criar conta</a></p>
+                            <p class="mb-0">New on our platform?<a routerLink="/register" class="link-indigo fw-bold link-hover"> Create an account</a></p>
                         </div>
                         <div class="or-login text-center position-relative mb-3">
-                            <h6 class="fs-14 mb-0 position-relative text-body">OR</h6>
+                            <h6 class="fs-14 mb-0 positioU-relative text-body">OR</h6>
                         </div>
                         <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mb-3">
 
@@ -55,7 +67,7 @@
                         </div>
                     </div>
                     <div class="text-center pt-3">
-                        <p class="text-dark mb-0">Copyright &copy; 2025 - Pró Enem</p>
+                        <p class="text-dark mb-0">Coporight &copy; 2025 - Pró Enem</p>
                     </div>
                 </form>
             </div>
