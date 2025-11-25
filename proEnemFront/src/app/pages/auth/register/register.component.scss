@@ -11,3 +11,23 @@
 @media (max-width: 576px) {
 	.col-md-10.mx-auto { padding: 1rem; }
 }
+
+
+.google-btn:hover {
+	background-color: #dad9d9;
+	border-radius: 8px;
+	transition: background-color 0.3s ease;
+}
+
+/* Garantir que o link (botão) dentro do container receba o hover e ocupe toda a área */
+.google-btn > a.btn {
+	display: block;
+	width: 100%;
+	height: 100%;
+	transition: background-color 0.3s ease;
+}
+
+.google-btn > a.btn:hover {
+	background-color: #dad9d9;
+	border-radius: 8px;
+}
