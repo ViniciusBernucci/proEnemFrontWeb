@@ -286,6 +286,10 @@ export const routes={
 
   notifications:'/notifications',
 
+  // Cronograma
+  simuladosCriar: '/simulados/criar',
+  simuladosListar: '/simulados/listar',
+
   // Misc
   success: '/success',
 

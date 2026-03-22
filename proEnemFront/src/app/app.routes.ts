@@ -31,6 +31,15 @@ export const routes: Routes = [
         },
       ]
     },
+    {
+      path: 'simulados',
+      children: [
+        {
+          path: 'criar',
+          loadComponent: () => import('./features/cronograma/novo-cronograma/novo-cronograma.component').then((m) => m.NovoCronogramaComponent),
+        },
+      ],
+    },
   ]
 },
 ];
