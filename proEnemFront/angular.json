@@ -28,14 +28,25 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/tabler-icons/iconfont/fonts",
+                "output": "fonts"
               }
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.scss",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeflex/primeflex.css",
-              "node_modules/tabler-icons/iconfont/tabler-icons.min.css"
+              "node_modules/tabler-icons/iconfont/tabler-icons.min.css",
+              "src/assets/scss/main.scss",
+              "src/styles.scss"
             ]
           },
           "configurations": {
