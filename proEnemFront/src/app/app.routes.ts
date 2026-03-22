@@ -23,11 +23,11 @@ export const routes: Routes = [
   children: [
     {
       path: 'user',
-      loadComponent: () => import('./features/main-menu/super-admin/super-admin.component').then((m) => m.SuperAdminComponent),
+      loadComponent: () => import('./pages/user-dashboard/user-dashboard.component').then((m) => m.UserDashboardComponent),
       children: [
         {
           path: 'dashboard',
-          loadComponent: () => import('./features/main-menu/super-admin/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+          loadComponent: () => import('./pages/user-dashboard/dashboard/dashboard.component').then((m) => m.DashboardComponent),
         },
       ]
     },

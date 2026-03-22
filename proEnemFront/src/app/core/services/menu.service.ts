@@ -42,8 +42,8 @@ export class MenuService {
         {
           menuValue: 'Dashboard',
           icon: 'dashboard',
-          route: '/super-admin/dashboard',
-          base: 'super-admin',
+          route: '/user/dashboard',
+          base: 'user',
           hasSubRoute: false,
           showSubRoute: false,
         },
