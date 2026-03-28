@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "backend-laravel",
+			"path": "../../backend-laravel"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {}
+}
