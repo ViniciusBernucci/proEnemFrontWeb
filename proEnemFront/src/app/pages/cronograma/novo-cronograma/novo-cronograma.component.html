@@ -316,6 +316,37 @@
               </div>
             </div>
           </div>
+
+          <!-- Mensagens de erro -->
+          @if (errorMessages.length > 0) {
+            <div class="alert alert-danger d-flex align-items-start gap-2 mb-3">
+              <i class="ti ti-alert-circle mt-1"></i>
+              <div class="flex-grow-1">
+                <strong class="d-block mb-1">Erro ao gerar cronograma:</strong>
+                <ul class="mb-0 ps-3">
+                  @for (message of errorMessages; track message) {
+                    <li>{{ message }}</li>
+                  }
+                </ul>
+              </div>
+            </div>
+          }
+
+          @if (errorMessage) {
+            <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+              <i class="ti ti-alert-circle"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          @if (isLoading) {
+            <div class="alert alert-info d-flex align-items-center gap-2 mb-3">
+              <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Carregando...</span>
+              </div>
+              <span>Gerando seu cronograma personalizado...</span>
+            </div>
+          }
         </div>
       }
 
@@ -342,8 +373,17 @@
           Próximo<i class="ti ti-arrow-right ms-1"></i>
         </button>
       } @else {
-        <button class="btn btn-success" (click)="gerarCronograma()">
-          <i class="ti ti-sparkles me-1"></i>Gerar Cronograma
+        <button
+          class="btn btn-success"
+          [disabled]="isLoading"
+          (click)="gerarCronograma()"
+        >
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Gerando...
+          } @else {
+            <i class="ti ti-sparkles me-1"></i>Gerar Cronograma
+          }
         </button>
       }
     </div>

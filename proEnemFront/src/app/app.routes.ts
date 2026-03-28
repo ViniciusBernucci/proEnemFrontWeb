@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/auth/login/login.component';
 import { RegisterComponent } from './pages/auth/register/register.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -35,7 +36,12 @@ export const routes: Routes = [
       path: 'simulados',
       children: [
         {
+          path: 'listar',
+          loadComponent: () => import('./pages/cronograma/listar-cronograma/listar-cronograma.component').then((m) => m.ListarCronogramaComponent),
+        },
+        {
           path: 'criar',
+          canActivate: [authGuard],
           loadComponent: () => import('./pages/cronograma/novo-cronograma/novo-cronograma.component').then((m) => m.NovoCronogramaComponent),
         },
       ],

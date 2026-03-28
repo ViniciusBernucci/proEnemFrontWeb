@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CronogramaService } from '../../../core/services/cronograma.service';
+import { CronogramaPayload } from '../../../core/models/cronograma.model';
 
 interface Disciplina {
   nome: string;
@@ -16,8 +20,15 @@ interface Disciplina {
   styleUrl: './novo-cronograma.component.scss',
 })
 export class NovoCronogramaComponent {
+  private cronogramaService = inject(CronogramaService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+
   etapaAtual = 1;
   totalEtapas = 5;
+  isLoading = false;
+  errorMessage = '';
+  errorMessages: string[] = [];
 
   // Etapa 1 - Período
   dataInicio = '';
@@ -124,6 +135,44 @@ export class NovoCronogramaComponent {
   }
 
   gerarCronograma(): void {
-    // Funcionalidade será implementada futuramente
+    if (!this.podeProsseguir()) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.errorMessages = [];
+
+    const payload: CronogramaPayload = {
+      data_inicio: this.dataInicio,
+      data_fim: this.dataFim,
+      dias_semana: this.diasSelecionados.map(d => d.valor),
+      estudar_feriados: this.estudarFeriados,
+      tirar_ferias: this.tirarFerias,
+      disciplinas_selecionadas: this.disciplinasSelecionadas.map(d => d.nome),
+      minutos_estudo_por_dia: this.minutosEstudoPorDia,
+    };
+
+    this.cronogramaService.criarCronograma(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          setTimeout(() => {
+            this.router.navigate(['/cronograma']);
+          }, 1000);
+        },
+        error: (error) => {
+          this.isLoading = false;
+
+          if (error.status === 422 && error.error?.errors) {
+            this.errorMessages = Object.values(error.error.errors).flat() as string[];
+          } else if (error.error?.message) {
+            this.errorMessage = error.error.message;
+          } else {
+            this.errorMessage = 'Erro ao salvar cronograma. Tente novamente.';
+          }
+        }
+      });
   }
 }

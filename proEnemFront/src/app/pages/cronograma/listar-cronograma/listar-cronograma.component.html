@@ -1,0 +1,124 @@
+<div class="lista-cronogramas-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Meus <span>Cronogramas</span></h1>
+    <button class="btn-novo" (click)="novoCronograma()">
+      ＋ Novo Cronograma
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="spinner-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Erro -->
+  <div *ngIf="!isLoading && errorMessage" class="error-box">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && !errorMessage && cronogramas.length === 0" class="state-box">
+    <div class="icon">📅</div>
+    <p>Você ainda não criou nenhum cronograma.</p>
+    <a (click)="novoCronograma()">Criar meu primeiro cronograma →</a>
+  </div>
+
+  <!-- Tabela -->
+  <div *ngIf="!isLoading && !errorMessage && cronogramas.length > 0" class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Período</th>
+            <th>Dias da semana</th>
+            <th>Disciplinas</th>
+            <th>Criado em</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of cronogramas">
+            <!-- ID -->
+            <td>{{ c.id }}</td>
+
+            <!-- Período -->
+            <td>
+              {{ formatarData(c.data_inicio) }} →
+              {{ formatarData(c.data_fim) }}
+            </td>
+
+            <!-- Dias -->
+            <td>{{ formatarDias(c.dias_semana) }}</td>
+
+            <!-- Disciplinas -->
+            <td>
+              <div class="badge-list">
+                <span *ngFor="let d of c.disciplinas_selecionadas.slice(0, 3)" class="badge">
+                  {{ d }}
+                </span>
+                <span *ngIf="c.disciplinas_selecionadas.length > 3" class="badge-more">
+                  +{{ c.disciplinas_selecionadas.length - 3 }}
+                </span>
+              </div>
+              <div class="carga">{{ formatarHoras(c.minutos_estudo_por_dia) }}</div>
+            </td>
+
+            <!-- Criado em -->
+            <td>{{ c.created_at | date:'dd/MM/yyyy' }}</td>
+
+            <!-- Ações -->
+            <td>
+              <div class="actions">
+                <button class="btn-icon view"
+                        title="Visualizar cronograma"
+                        (click)="verCronograma(c.id)">
+                  👁
+                </button>
+                <button class="btn-icon pdf"
+                        title="Gerar PDF"
+                        (click)="gerarPdf(c)">
+                  📄
+                </button>
+                <button class="btn-icon del"
+                        title="Excluir cronograma"
+                        (click)="deletarCronograma(c)">
+                  🗑
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Área de impressão — visível apenas no print -->
+<div class="print-area" *ngIf="cronogramaSelecionadoPdf as c">
+  <h2>Cronograma #{{ c.id }}</h2>
+  <p>Gerado em: {{ c.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+
+  <table>
+    <tbody>
+      <tr>
+        <th>Período</th>
+        <td>{{ formatarData(c.data_inicio) }} até {{ formatarData(c.data_fim) }}</td>
+      </tr>
+      <tr>
+        <th>Dias da semana</th>
+        <td>{{ formatarDias(c.dias_semana) }}</td>
+      </tr>
+      <tr>
+        <th>Carga horária</th>
+        <td>{{ formatarHoras(c.minutos_estudo_por_dia) }}</td>
+      </tr>
+      <tr>
+        <th>Disciplinas</th>
+        <td>{{ c.disciplinas_selecionadas.join(', ') }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
