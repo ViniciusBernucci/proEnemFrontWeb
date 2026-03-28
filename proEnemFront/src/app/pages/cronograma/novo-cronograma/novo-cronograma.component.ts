@@ -1,15 +1,15 @@
-import { Component, inject, DestroyRef } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs/operators';
 import { CronogramaService } from '../../../core/services/cronograma.service';
+import { DisciplinaService } from '../../../core/services/disciplina.service';
 import { CronogramaPayload } from '../../../core/models/cronograma.model';
+import { DisciplinaItem } from '../../../core/models/disciplina.model';
 
-interface Disciplina {
-  nome: string;
-  area: string;
+interface Disciplina extends DisciplinaItem {
   selecionada: boolean;
 }
 
@@ -20,8 +20,9 @@ interface Disciplina {
   templateUrl: './novo-cronograma.component.html',
   styleUrl: './novo-cronograma.component.scss',
 })
-export class NovoCronogramaComponent {
+export class NovoCronogramaComponent implements OnInit {
   private cronogramaService = inject(CronogramaService);
+  private disciplinaService = inject(DisciplinaService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
@@ -63,22 +64,21 @@ export class NovoCronogramaComponent {
     return `${h}h ${m}min`;
   }
 
-  // Etapa 3 - Disciplinas
-  disciplinas: Disciplina[] = [
-    { nome: 'Matemática', area: 'Matemática e suas Tecnologias', selecionada: false },
-    { nome: 'Língua Portuguesa', area: 'Linguagens, Códigos e suas Tecnologias', selecionada: false },
-    { nome: 'Literatura', area: 'Linguagens, Códigos e suas Tecnologias', selecionada: false },
-    { nome: 'Inglês', area: 'Linguagens, Códigos e suas Tecnologias', selecionada: false },
-    { nome: 'Espanhol', area: 'Linguagens, Códigos e suas Tecnologias', selecionada: false },
-    { nome: 'Redação', area: 'Linguagens, Códigos e suas Tecnologias', selecionada: false },
-    { nome: 'Física', area: 'Ciências da Natureza e suas Tecnologias', selecionada: false },
-    { nome: 'Química', area: 'Ciências da Natureza e suas Tecnologias', selecionada: false },
-    { nome: 'Biologia', area: 'Ciências da Natureza e suas Tecnologias', selecionada: false },
-    { nome: 'História', area: 'Ciências Humanas e suas Tecnologias', selecionada: false },
-    { nome: 'Geografia', area: 'Ciências Humanas e suas Tecnologias', selecionada: false },
-    { nome: 'Filosofia', area: 'Ciências Humanas e suas Tecnologias', selecionada: false },
-    { nome: 'Sociologia', area: 'Ciências Humanas e suas Tecnologias', selecionada: false },
-  ];
+  // Etapa 3 - Disciplinas (carregadas da API)
+  disciplinas: Disciplina[] = [];
+
+  ngOnInit(): void {
+    this.disciplinaService.listarDisciplinas()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (lista) => {
+          this.disciplinas = lista.map(d => ({ ...d, selecionada: false }));
+        },
+        error: () => {
+          this.errorMessage = 'Erro ao carregar disciplinas. Recarregue a página.';
+        }
+      });
+  }
 
   get areas(): string[] {
     return [...new Set(this.disciplinas.map((d) => d.area))];
@@ -155,7 +155,7 @@ export class NovoCronogramaComponent {
       dias_semana: this.diasSelecionados.map(d => d.valor),
       estudar_feriados: this.estudarFeriados,
       tirar_ferias: this.tirarFerias,
-      disciplinas_selecionadas: this.disciplinasSelecionadas.map(d => d.nome),
+      disciplinas_selecionadas: this.disciplinasSelecionadas.map(d => d.id),
       minutos_estudo_por_dia: this.minutosEstudoPorDia,
     };
 

@@ -195,7 +195,7 @@
                 {{ area }}
               </h6>
               <div class="disciplinas-grid">
-                @for (disciplina of disciplinasPorArea(area); track disciplina.nome) {
+                @for (disciplina of disciplinasPorArea(area); track disciplina.id) {
                   <div
                     class="disciplina-card"
                     [class.selecionada]="disciplina.selecionada"

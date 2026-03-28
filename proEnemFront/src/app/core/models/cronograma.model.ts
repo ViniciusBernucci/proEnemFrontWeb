@@ -5,7 +5,7 @@ export interface CronogramaPayload {
   dias_semana: string[];
   estudar_feriados: boolean;
   tirar_ferias: boolean;
-  disciplinas_selecionadas: string[];
+  disciplinas_selecionadas: number[];
   minutos_estudo_por_dia: number;
 }
 
