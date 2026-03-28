@@ -77,6 +77,7 @@ export class SettingsService {
     this.common.last.subscribe((res: string) => {
       this.last = res;
     });
+    this.renderer.setAttribute(document.documentElement, 'data-bs-theme', this.themeColor.value);
   }
 
 

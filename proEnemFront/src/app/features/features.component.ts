@@ -144,7 +144,6 @@ ngOnInit():void{
     this.common.last.next(splitVal[3]);
   } 
   ngOnDestroy(): void {
-    this.settings.changeThemeColor('light');
   }
 sidebarClose(){
   this.mobileSidebar='false';

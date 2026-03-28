@@ -58,6 +58,7 @@ export class HeaderComponent {
       }
     });
 
+    this.themeMode = this.settings.themeColor.value;
     this.settings.themeColor.subscribe((res: string) => {
       this.themeMode = res;
     });
@@ -107,18 +108,8 @@ export class HeaderComponent {
     }
   }
   
-  changeTheme(){
-    if(this.themeMode === 'light'){
-      this.changeThemeColor('dark')
-    }
-    else{
-      this.changeThemeColor('light')
-    }
-  }
-  public changeThemeColor(theme: string): void {
-    this.settings.themeColor.next(theme);
-    this.settings.changeThemeColor(theme);
-    localStorage.setItem('themeMode', theme);
+  changeTheme(): void {
+    this.settings.changeThemeColor(this.themeMode === 'light' ? 'dark' : 'light');
   }
   miniSideBarBlur(position: string) {
     if (position === 'over') {

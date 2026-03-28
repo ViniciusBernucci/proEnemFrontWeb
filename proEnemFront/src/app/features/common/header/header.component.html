@@ -5,6 +5,14 @@
     <div class="page-container topbar-menu">
 
         <div class="d-flex align-items-center justify-content-end gap-2 w-100">
+
+                        <!-- Dark/Light Mode Toggle -->
+                        <div class="header-item">
+                            <button class="topbar-link btn" type="button" (click)="changeTheme()" [title]="themeMode === 'dark' ? 'Mudar para Light Mode' : 'Mudar para Dark Mode'" aria-label="Alternar tema">
+                                <i class="fs-18" [class]="themeMode === 'dark' ? 'ti ti-sun' : 'ti ti-moon'"></i>
+                            </button>
+                        </div>
+
                         <!-- Notification Dropdown -->
                         <div class="header-item">
                             <div class="dropdown me-2">
