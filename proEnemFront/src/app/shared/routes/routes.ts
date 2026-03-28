@@ -1,5 +1,3 @@
-import { BlogCategoriesComponent } from "../../features/content/blogs/blog-categories/blog-categories.component";
-
 export const routes={
   //Authentication
  login: '/login',

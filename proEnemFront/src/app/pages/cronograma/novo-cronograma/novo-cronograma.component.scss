@@ -1,0 +1,312 @@
+// Stepper
+.stepper-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+}
+
+.stepper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+
+  &:not(:last-child) {
+    margin-right: 0;
+  }
+}
+
+.stepper-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  z-index: 1;
+  position: relative;
+  transition: background-color 0.3s, color 0.3s;
+
+  .stepper-item.active & {
+    background-color: var(--bs-primary, #0d6efd);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+  }
+
+  .stepper-item.completed & {
+    background-color: #22c55e;
+    color: #fff;
+  }
+}
+
+.stepper-label {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-align: center;
+  max-width: 90px;
+
+  .stepper-item.active & {
+    color: var(--bs-primary, #0d6efd);
+    font-weight: 600;
+  }
+
+  .stepper-item.completed & {
+    color: #22c55e;
+  }
+}
+
+.stepper-line {
+  position: absolute;
+  top: 21px;
+  left: calc(50% + 21px);
+  right: calc(-50% + 21px);
+  height: 2px;
+  background-color: #e5e7eb;
+  z-index: 0;
+
+  .stepper-item.completed & {
+    background-color: #22c55e;
+  }
+}
+
+// Etapa content
+.etapa-header {
+  border-left: 4px solid var(--bs-primary, #0d6efd);
+  padding-left: 1rem;
+}
+
+// Dias da semana
+.dias-semana-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.dia-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background-color: #f9fafb;
+  gap: 4px;
+
+  i {
+    font-size: 20px;
+  }
+
+  &:hover {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: rgba(13, 110, 253, 0.05);
+    color: var(--bs-primary, #0d6efd);
+  }
+
+  &.selecionado {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: var(--bs-primary, #0d6efd);
+    color: #fff;
+  }
+}
+
+// Disciplinas
+.disciplinas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.disciplina-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 10px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  background-color: #f9fafb;
+  text-align: center;
+  gap: 4px;
+  position: relative;
+
+  i {
+    font-size: 22px;
+  }
+
+  .check-icon {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 14px;
+    color: #fff;
+  }
+
+  &:hover {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: rgba(13, 110, 253, 0.05);
+    color: var(--bs-primary, #0d6efd);
+  }
+
+  &.selecionada {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: var(--bs-primary, #0d6efd);
+    color: #fff;
+  }
+}
+
+// Carga Horária
+.horas-slider-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.horas-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  i {
+    font-size: 48px;
+  }
+}
+
+.horas-valor {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--bs-primary, #0d6efd);
+  line-height: 1;
+}
+
+.horas-sub {
+  font-size: 14px;
+}
+
+.horas-range {
+  width: 100%;
+  accent-color: var(--bs-primary, #0d6efd);
+  cursor: pointer;
+  height: 6px;
+}
+
+.horas-marcadores {
+  position: relative;
+  height: 18px;
+  margin-top: 6px;
+
+  span {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 500;
+    white-space: nowrap;
+
+    &:first-child {
+      transform: translateX(0);
+    }
+
+    &:last-child {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+.horas-dicas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dica-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background-color: #f9fafb;
+  transition: all 0.2s;
+  font-size: 13px;
+
+  i {
+    font-size: 22px;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  span {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+
+  &.dica-ativa {
+    border-color: var(--bs-primary, #0d6efd);
+    background-color: rgba(13, 110, 253, 0.06);
+
+    strong {
+      color: var(--bs-primary, #0d6efd);
+    }
+  }
+}
+
+// Resumo etapa 5
+.resumo-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.resumo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+
+  i {
+    font-size: 24px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+}
