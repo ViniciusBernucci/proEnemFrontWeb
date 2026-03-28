@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { SettingsService } from '../../../shared/settings/settings.service';
 import { MenuService } from '../../../core/services/menu.service';
+import { AuthService } from '../../../core/services/auth.service';
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
@@ -35,6 +36,7 @@ export class SidebarComponent  {
     private common: CommonService,
     private settings: SettingsService,
     private menuService: MenuService,
+    private authService: AuthService,
   ) {
     router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
@@ -210,5 +212,9 @@ collapseAllSubMenus(): void {
       resMenu.showSubRoute = false;
     });
   });
+}
+
+logout(): void {
+  this.authService.logout();
 }
 }

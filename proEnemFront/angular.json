@@ -47,6 +47,9 @@
               "node_modules/tabler-icons/iconfont/tabler-icons.min.css",
               "src/assets/scss/main.scss",
               "src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           },
           "configurations": {

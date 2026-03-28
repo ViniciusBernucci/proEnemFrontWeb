@@ -1,76 +1,143 @@
-<div class="account-page bg-white">
-    <div class="main-wrapper">
-        <div class="center-container d-flex align-items-center justify-content-center vh-100 p-3">
-            <div class="card-wrapper w-100" style="max-width:520px;">
-                <form [formGroup]="loginForm" (ngSubmit)="navigate()" class="d-flex flex-column p-4 bg-white rounded shadow-sm">
-                    <div class="text-center mb-4 auth-logo">
-                        <img src="assets/img/logo.svg" class="img-fluid" alt="Logo" style="max-height:48px;">
-                    </div>
-                    <!-- Alerts (use *ngIf se necessário) -->
-                    <div *ngIf="message" class="alert alert-success" role="alert">{{ message }}</div>
-                    <div *ngIf="error" class="alert alert-danger" role="alert">{{ error }}</div>
-                    <div>
-                        <div class="mb-3">
-                            <h3 class="mb-2">Login</h3>
-                            <p class="mb-0">Acesse o painel do Pro Enem usando seu email e senha.</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <div class="input-group input-group-flat">
-                                <input type="email" class="form-control"
-                                        formControlName="email"
-                                        [class.is-invalid]="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || submitted)"
-                                />
-                                <span class="input-group-text">
-                                    <i class="ti ti-mail"></i>
-                                </span>
-                                <!-- Validação Angular -->
-                                <ng-container *ngIf="loginForm.get('email') as emailCtrl">
-                                  <div *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || submitted)" class="invalid-feedback d-block">Campo obrigatório.</div>
-                                  <div *ngIf="emailCtrl.hasError('whitespace') && (emailCtrl.touched || submitted)" class="invalid-feedback d-block">Não pode ser somente espaços.</div>
-                                </ng-container>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Senha</label>
-                            <div class="input-group input-group-flat pass-group">
-                                <input [type]="password[1] ? 'text' : 'password' " class="pass-input form-control">
-                                <span class="input-group-text toggle-password" (click)="togglePassword(1)" tabindex="0"><i class="ti" [ngClass]=" password[1] ? 'ti-eye' : 'ti-eye-off'"></i></span>
-           
-                 </div>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="form-check form-check-md d-flex align-items-center">
-                                <input class="form-check-input mt-0" type="checkbox" value="" id="checkebox-md" checked="">
-                                <label class="form-check-label text-dark ms-1" for="checkebox-md">Lembrar-me</label>
-                            </div>
-                            <div class="text-end">
-                                <a routerLink="/forgot-password" class="link-danger fw-medium link-hover">Esqueceu a senha?</a>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                        </div>
-                        <div class="mb-3">
-                            <p class="mb-0">Novo na nossa plataforma?<a routerLink="/register" class="link-indigo fw-bold link-hover"> Crie uma conta</a></p>
-                        </div>
-                        <div class="or-login text-center position-relative mb-3">
-                            <h6 class="fs-14 mb-0 positioU-relative text-body">OU</h6>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 mb-3">
+<div class="auth-page">
+  <div class="auth-container">
 
-                            <div class="text-center flex-fill google-btn">
-                                <a href="javascript:void(0);" class="p-2 btn btn-outline-light d-flex align-items-center justify-content-center">
-                                    <img class="img-fluid  m-1" src="assets/img/icons/google-logo.svg" alt="Google">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center pt-3">
-                        <p class="text-dark mb-0">Coporight &copy; 2025 - Pro Enem</p>
-                    </div>
-                </form>
-            </div>
+    <!-- Painel esquerdo: branding -->
+    <div class="auth-brand d-none d-lg-flex">
+      <div class="auth-brand__content">
+        <div class="auth-brand__logo mb-5">
+          <img src="assets/logo/logo azul(250 x 150 px).png" alt="Pro Enem" class="brand-logo">
         </div>
+        <h1 class="auth-brand__headline">Sua aprovação<br>começa aqui.</h1>
+        <p class="auth-brand__sub">Estude com inteligência e conquiste<br>sua vaga na universidade dos sonhos.</p>
+        <div class="auth-brand__stats">
+          <div class="stat-item">
+            <span class="stat-number">98%</span>
+            <span class="stat-label">de aprovação</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">50k+</span>
+            <span class="stat-label">estudantes</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">5 anos</span>
+            <span class="stat-label">de experiência</span>
+          </div>
+        </div>
+      </div>
+      <div class="auth-brand__circles">
+        <span class="circle circle--1"></span>
+        <span class="circle circle--2"></span>
+        <span class="circle circle--3"></span>
+      </div>
     </div>
+
+    <!-- Painel direito: formulário -->
+    <div class="auth-form-panel">
+      <div class="auth-form-wrapper">
+
+        <!-- Logo mobile -->
+        <div class="d-flex d-lg-none justify-content-center mb-4">
+          <img src="assets/logo/logo azul(250 x 150 px).png" alt="Pro Enem" style="max-height: 40px;">
+        </div>
+
+        <div class="auth-form-header">
+          <h2 class="auth-form-title">Bem-vindo de volta</h2>
+          <p class="auth-form-subtitle">Acesse sua conta para continuar estudando.</p>
+        </div>
+
+        <!-- Alertas -->
+        <div *ngIf="message" class="alert-custom alert-custom--success" role="alert">
+          <i class="ti ti-circle-check"></i> {{ message }}
+        </div>
+        <div *ngIf="error" class="alert-custom alert-custom--error" role="alert">
+          <i class="ti ti-alert-circle"></i> {{ error }}
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="navigate()" novalidate>
+
+          <!-- Email -->
+          <div class="form-field" [class.form-field--error]="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || submitted)">
+            <label class="form-field__label" for="email">Email</label>
+            <div class="form-field__input-wrap">
+              <span class="form-field__icon"><i class="ti ti-mail"></i></span>
+              <input
+                id="email"
+                type="email"
+                class="form-field__input"
+                formControlName="email"
+                placeholder="seu@email.com"
+                autocomplete="email"
+              />
+            </div>
+            <ng-container *ngIf="loginForm.get('email') as emailCtrl">
+              <span *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || submitted)" class="form-field__error">Campo obrigatório.</span>
+              <span *ngIf="emailCtrl.hasError('email') && (emailCtrl.touched || submitted)" class="form-field__error">Insira um email válido.</span>
+              <span *ngIf="emailCtrl.hasError('whitespace') && (emailCtrl.touched || submitted)" class="form-field__error">Não pode ser somente espaços.</span>
+            </ng-container>
+          </div>
+
+          <!-- Senha -->
+          <div class="form-field" [class.form-field--error]="loginForm.get('senha')?.invalid && (loginForm.get('senha')?.touched || submitted)">
+            <div class="form-field__label-row">
+              <label class="form-field__label" for="senha">Senha</label>
+              <a routerLink="/forgot-password" class="form-field__link">Esqueceu a senha?</a>
+            </div>
+            <div class="form-field__input-wrap">
+              <span class="form-field__icon"><i class="ti ti-lock"></i></span>
+              <input
+                id="senha"
+                [type]="password[1] ? 'text' : 'password'"
+                class="form-field__input"
+                formControlName="senha"
+                placeholder="Mínimo 6 caracteres"
+                autocomplete="current-password"
+              />
+              <button type="button" class="form-field__toggle" (click)="togglePassword(1)" tabindex="-1" aria-label="Mostrar/ocultar senha">
+                <i class="ti" [ngClass]="password[1] ? 'ti-eye' : 'ti-eye-off'"></i>
+              </button>
+            </div>
+            <ng-container *ngIf="loginForm.get('senha') as senhaCtrl">
+              <span *ngIf="senhaCtrl.hasError('required') && (senhaCtrl.touched || submitted)" class="form-field__error">Campo obrigatório.</span>
+              <span *ngIf="senhaCtrl.hasError('minlength') && (senhaCtrl.touched || submitted)" class="form-field__error">Mínimo de 6 caracteres.</span>
+            </ng-container>
+          </div>
+
+          <!-- Lembrar-me -->
+          <div class="form-check-custom mb-4">
+            <input class="form-check-custom__input" type="checkbox" id="lembrar" formControlName="lembrar">
+            <label class="form-check-custom__label" for="lembrar">Manter-me conectado</label>
+          </div>
+
+          <!-- Botão entrar -->
+          <button type="submit" class="btn-primary-auth w-100" [disabled]="loading()">
+            <span *ngIf="!loading()">Entrar</span>
+            <span *ngIf="loading()" class="btn-spinner"></span>
+          </button>
+
+          <!-- Link registro -->
+          <p class="auth-redirect-text">
+            Novo na plataforma?
+            <a routerLink="/register" class="auth-redirect-link">Criar conta grátis</a>
+          </p>
+
+          <!-- Separador -->
+          <div class="auth-separator">
+            <span>ou continue com</span>
+          </div>
+
+          <!-- Botão Google -->
+          <button type="button" class="btn-google w-100" (click)="loginWithGoogle()">
+            <img src="assets/img/icons/google-logo.svg" alt="" aria-hidden="true" width="20" height="20">
+            <span>Continuar com Google</span>
+          </button>
+
+        </form>
+
+        <p class="auth-footer-text">© 2025 Pro Enem. Todos os direitos reservados.</p>
+      </div>
+    </div>
+
+  </div>
 </div>

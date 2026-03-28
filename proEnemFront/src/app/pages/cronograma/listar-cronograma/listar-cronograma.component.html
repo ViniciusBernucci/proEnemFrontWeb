@@ -32,7 +32,7 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Período</th>
+            <th>Nome</th>
             <th>Dias da semana</th>
             <th>Disciplinas</th>
             <th>Criado em</th>
@@ -44,11 +44,8 @@
             <!-- ID -->
             <td>{{ c.id }}</td>
 
-            <!-- Período -->
-            <td>
-              {{ formatarData(c.data_inicio) }} →
-              {{ formatarData(c.data_fim) }}
-            </td>
+            <!-- Nome -->
+            <td>{{ c.nome }}</td>
 
             <!-- Dias -->
             <td>{{ formatarDias(c.dias_semana) }}</td>

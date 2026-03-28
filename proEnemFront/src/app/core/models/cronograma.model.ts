@@ -1,4 +1,5 @@
 export interface CronogramaPayload {
+  nome: string;
   data_inicio: string;
   data_fim: string;
   dias_semana: string[];
@@ -10,6 +11,7 @@ export interface CronogramaPayload {
 
 export interface CronogramaResponse {
   id: number;
+  nome: string;
   data_inicio: string;
   data_fim: string;
   dias_semana: string[];
@@ -23,6 +25,7 @@ export interface CronogramaResponse {
 
 export interface CronogramaListItem {
   id: number;
+  nome: string;
   data_inicio: string;
   data_fim: string;
   dias_semana: string[];

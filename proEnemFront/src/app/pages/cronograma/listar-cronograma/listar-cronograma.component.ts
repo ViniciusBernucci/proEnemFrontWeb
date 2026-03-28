@@ -1,7 +1,6 @@
-import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CronogramaService } from '../../../core/services/cronograma.service';
 import { CronogramaListItem } from '../../../core/models/cronograma.model';
 
@@ -15,7 +14,6 @@ import { CronogramaListItem } from '../../../core/models/cronograma.model';
 export class ListarCronogramaComponent implements OnInit {
   private cronogramaService = inject(CronogramaService);
   private router = inject(Router);
-  private destroyRef = inject(DestroyRef);
 
   cronogramas: CronogramaListItem[] = [];
   isLoading = true;
@@ -33,7 +31,6 @@ export class ListarCronogramaComponent implements OnInit {
     this.errorMessage = '';
 
     this.cronogramaService.listarCronogramas()
-      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
           this.cronogramas = data;
@@ -41,7 +38,6 @@ export class ListarCronogramaComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          // 404, timeout ou backend fora = exibe estado vazio
           if (error.status === 404 || error.name === 'TimeoutError' || error.status === 0) {
             this.cronogramas = [];
           } else {
@@ -56,14 +52,13 @@ export class ListarCronogramaComponent implements OnInit {
   }
 
   deletarCronograma(cronograma: CronogramaListItem): void {
-    const confirmar = confirm(`Deseja realmente excluir o cronograma #${cronograma.id}?\nPeríodo: ${this.formatarData(cronograma.data_inicio)} → ${this.formatarData(cronograma.data_fim)}`);
+    const confirmar = confirm(`Deseja realmente excluir o cronograma "${cronograma.nome}"?`);
     if (!confirmar) return;
 
     this.cronogramaService.deletarCronograma(cronograma.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.cronogramas = this.cronogramas.filter(c => c.id !== cronograma.id);
+          this.carregarCronogramas();
         },
         error: () => {
           alert('Erro ao excluir o cronograma. Tente novamente.');

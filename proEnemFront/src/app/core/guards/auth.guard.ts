@@ -1,8 +1,14 @@
-import { CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-// TODO: Reativar guard após configurar login com Sanctum
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const authGuard: CanActivateFn = (route, state) => {
-  // ⚠️ GUARD DESABILITADO TEMPORARIAMENTE PARA TESTES
-  return true;
+export const authGuard: CanActivateFn = () => {
+  const auth   = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isAuthenticated()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/login']);
 };

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs/operators';
 import { CronogramaService } from '../../../core/services/cronograma.service';
 import { CronogramaPayload } from '../../../core/models/cronograma.model';
 
@@ -27,8 +28,12 @@ export class NovoCronogramaComponent {
   etapaAtual = 1;
   totalEtapas = 5;
   isLoading = false;
+  successMessage = '';
   errorMessage = '';
   errorMessages: string[] = [];
+
+  // Nome do cronograma
+  nomeCronograma = '';
 
   // Etapa 1 - Período
   dataInicio = '';
@@ -110,7 +115,7 @@ export class NovoCronogramaComponent {
   podeProsseguir(): boolean {
     switch (this.etapaAtual) {
       case 1:
-        return !!this.dataInicio && !!this.dataFim && this.dataFim >= this.dataInicio;
+        return !!this.nomeCronograma.trim() && !!this.dataInicio && !!this.dataFim && this.dataFim >= this.dataInicio;
       case 2:
         return this.diasSelecionados.length > 0;
       case 3:
@@ -144,6 +149,7 @@ export class NovoCronogramaComponent {
     this.errorMessages = [];
 
     const payload: CronogramaPayload = {
+      nome: this.nomeCronograma.trim(),
       data_inicio: this.dataInicio,
       data_fim: this.dataFim,
       dias_semana: this.diasSelecionados.map(d => d.valor),
@@ -154,17 +160,17 @@ export class NovoCronogramaComponent {
     };
 
     this.cronogramaService.criarCronograma(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isLoading = false)
+      )
       .subscribe({
         next: () => {
           this.isLoading = false;
-          setTimeout(() => {
-            this.router.navigate(['/cronograma']);
-          }, 1000);
+          this.successMessage = 'Cronograma criado com sucesso!';
+          setTimeout(() => this.router.navigate(['/cronograma']), 1500);
         },
         error: (error) => {
-          this.isLoading = false;
-
           if (error.status === 422 && error.error?.errors) {
             this.errorMessages = Object.values(error.error.errors).flat() as string[];
           } else if (error.error?.message) {

@@ -6,6 +6,7 @@ import { CommonService } from '../../../shared/common/common.service';
 import { SidebarService } from '../../../shared/sidebar/sidebar.service';
 import { SettingsService } from '../../../shared/settings/settings.service';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class HeaderComponent {
     private sidebar: SidebarService,
     public settings: SettingsService,
     private sideBar: SidebarService,
+    private authService: AuthService,
   ) {
     this.common.base.subscribe((base: string) => {
       this.base = base;
@@ -167,5 +169,9 @@ export class HeaderComponent {
   }
   multiLevelThree() {
     this.multiLevel3 = !this.multiLevel3;
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

@@ -61,6 +61,18 @@
           </div>
 
           <div class="row row-gap-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">
+                <i class="ti ti-pencil me-1 text-primary"></i>Nome do Cronograma
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="nomeCronograma"
+                placeholder="Ex: Meu cronograma ENEM 2025"
+                maxlength="100"
+              />
+            </div>
             <div class="col-md-6">
               <label class="form-label fw-semibold">
                 <i class="ti ti-calendar-event me-1 text-primary"></i>Data de Início
@@ -282,6 +294,13 @@
           <!-- Resumo -->
           <div class="resumo-grid mb-4">
             <div class="resumo-item">
+              <i class="ti ti-pencil text-primary"></i>
+              <div>
+                <small class="text-muted d-block">Nome</small>
+                <strong>{{ nomeCronograma }}</strong>
+              </div>
+            </div>
+            <div class="resumo-item">
               <i class="ti ti-calendar-event text-primary"></i>
               <div>
                 <small class="text-muted d-block">Período</small>
@@ -345,6 +364,13 @@
                 <span class="visually-hidden">Carregando...</span>
               </div>
               <span>Gerando seu cronograma personalizado...</span>
+            </div>
+          }
+
+          @if (successMessage) {
+            <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+              <i class="ti ti-circle-check"></i>
+              <span>{{ successMessage }}</span>
             </div>
           }
         </div>

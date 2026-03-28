@@ -1,32 +1,86 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
+
+function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+  const pw      = group.get('password')?.value;
+  const confirm = group.get('password_confirmation')?.value;
+  return pw === confirm ? null : { passwordMismatch: true };
+}
 
 @Component({
   standalone: true,
   selector: 'app-register',
-  imports: [RouterLink,FormsModule,CommonModule],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
-  // rota local mínima caso o shared routes não exista
-  routes = {
-    login: '/login'
-  };
+  private router = inject(Router);
+  private auth   = inject(AuthService);
+  private fb     = inject(FormBuilder);
 
-  constructor(private router: Router) {}
+  registerForm: FormGroup = this.fb.group(
+    {
+      name:                  ['', [Validators.required, Validators.minLength(2)]],
+      phone:                 [''],
+      email:                 ['', [Validators.required, Validators.email]],
+      password:              ['', [Validators.required, Validators.minLength(8)]],
+      password_confirmation: ['', [Validators.required]],
+      terms:                 [false],
+    },
+    { validators: passwordMatchValidator },
+  );
 
-  public navigate() {
-    // aqui normalmente faria a chamada para criar o usuário
-    // após sucesso, redireciona para a tela de login
-    this.router.navigate([this.routes.login]);
+  submitted = false;
+  message:   string | null = null;
+  error:     string | null = null;
+  loading    = false;
+  password:  boolean[] = [false, false, false];
+
+  navigate(): void {
+    this.submitted = true;
+    this.error = null;
+
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    if (!this.registerForm.get('terms')?.value) {
+      this.error = 'Você precisa aceitar os Termos de Uso para continuar.';
+      return;
+    }
+
+    const { name, email, password, password_confirmation, phone } = this.registerForm.value;
+    this.loading = true;
+
+    this.auth.register({ name, email, password, password_confirmation, phone }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/user/dashboard']);
+      },
+      error: (err: Error) => {
+        this.loading = false;
+        this.error = err.message;
+      },
+    });
   }
 
-  public password : boolean[] = [false];
+  loginWithGoogle(): void {
+    this.auth.loginWithGoogle();
+  }
 
-  public togglePassword(index: any){
-    this.password[index] = !this.password[index]
+  togglePassword(index: number): void {
+    this.password[index] = !this.password[index];
   }
 }

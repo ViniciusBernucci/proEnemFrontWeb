@@ -34,7 +34,7 @@
           @for (mainTittle of side_bar_data; track mainTittle) {
           <li class="menu-title">
             <span>{{ mainTittle.tittle }}</span>
-            </li>
+          </li>
             <li>
               <ul>
                 @for (menu of mainTittle?.menu; track menu) {
@@ -104,6 +104,19 @@
             </li>
           
           }
+        </ul>
+        <ul>
+          <li class="menu-title"><span>CONTA</span></li>
+          <li>
+            <ul>
+              <li>
+                <a href="javascript:void(0)" (click)="logout()" class="text-danger">
+                  <i class="ti ti-logout"></i>
+                  <span>Sair</span>
+                </a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </div>
     </ng-scrollbar>
