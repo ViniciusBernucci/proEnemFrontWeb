@@ -51,6 +51,26 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'registro-estudos',
+        children: [
+          {
+            path: 'tracker',
+            canActivate: [authGuard],
+            loadComponent: () => import('./features/registro-estudos/tracker/tracker.component').then((m) => m.TrackerComponent),
+          },
+        ],
+      },
+      {
+        path: 'mentor',
+        children: [
+          {
+            path: 'chat',
+            canActivate: [authGuard],
+            loadComponent: () => import('./features/mentor/chat/chat.component').then((m) => m.ChatComponent),
+          },
+        ],
+      },
     ],
   },
 ];

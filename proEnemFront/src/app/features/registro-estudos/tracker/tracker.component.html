@@ -1,0 +1,107 @@
+<div class="tracker-container">
+  <!-- Header -->
+  <div class="tracker-header">
+    <div class="tracker-title">
+      <h2>Tracker de Estudos</h2>
+      <p>Acompanhe seu rendimento e metas</p>
+    </div>
+    <div class="tracker-toggle">
+      <button [class.active]="viewMode === 'daily'" (click)="setViewMode('daily')">Diário</button>
+      <button [class.active]="viewMode === 'weekly'" (click)="setViewMode('weekly')">Semanal</button>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="tracker-progress">
+    <div class="progress-info">
+      <span>Progresso {{ viewMode === 'daily' ? 'do Dia' : 'da Semana' }}</span>
+      <span>{{ getProgressPercentage() }}%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" [style.width.%]="getProgressPercentage()"></div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    {{ error }}
+  </div>
+
+  <!-- Loading State 
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Carregando as metas...</p>
+  </div>
+  -->
+
+  <!-- Content -->
+  <div *ngIf="!isLoading && !error" class="tracker-content">
+    
+    <!-- Daily View -->
+    <ng-container *ngIf="viewMode === 'daily'">
+      <div class="daily-view">
+        <h3 class="section-title">Hoje, {{ formatDate(today) }}</h3>
+        <div class="task-list">
+          <div *ngIf="!dailyTasks.length" class="empty-state">
+            <p>Oba! Você não possui metas para hoje.</p>
+          </div>
+          <div *ngFor="let task of dailyTasks" class="task-card" [class.completed]="task.completed" (click)="toggleTask(task)">
+            <div class="task-status">
+              <input type="checkbox" [checked]="task.completed" (click)="$event.stopPropagation(); toggleTask(task)">
+            </div>
+            <div class="task-info">
+              <span class="task-subject">{{ task.subject }}</span>
+              <span class="task-topic">{{ task.topic }}</span>
+            </div>
+            <div class="task-meta">
+              <span class="task-type type-{{ task.type }}">{{ getTypeLabel(task.type) }}</span>
+              <span class="task-duration">{{ task.duration }} min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Weekly View -->
+    <ng-container *ngIf="viewMode === 'weekly'">
+      <div class="weekly-view">
+        <div *ngFor="let day of weeklyTasks" class="day-column" [class.selected]="selectedDate === day.date" (click)="selectDate(day.date)">
+          <div class="day-header" [class.is-today]="day.date === today">
+            {{ formatDate(day.date) }}
+          </div>
+          <div class="day-content">
+            <div *ngIf="!day.tasks.length" class="empty-day">-</div>
+            <div *ngFor="let task of day.tasks" class="weekly-task-card" [class.completed]="task.completed">
+               <span class="subject-dot type-{{ task.type }}"></span>
+               <span class="topic-text">{{ task.subject }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Day Details -->
+      <div class="selected-day-details" *ngIf="selectedDate">
+        <h4 class="details-title">Detalhes para {{ formatDate(selectedDate) }}</h4>
+        <div class="task-list">
+          <div *ngIf="!getSelectedDayTasks().length" class="empty-state">
+            <p>Oba! Sem metas para este dia.</p>
+          </div>
+          <div *ngFor="let task of getSelectedDayTasks()" class="task-card" [class.completed]="task.completed" (click)="toggleTask(task)">
+            <div class="task-status">
+              <input type="checkbox" [checked]="task.completed" (click)="$event.stopPropagation(); toggleTask(task)">
+            </div>
+            <div class="task-info">
+              <span class="task-subject">{{ task.subject }}</span>
+              <span class="task-topic">{{ task.topic }}</span>
+            </div>
+            <div class="task-meta">
+              <span class="task-type type-{{ task.type }}">{{ getTypeLabel(task.type) }}</span>
+              <span class="task-duration">{{ task.duration }} min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

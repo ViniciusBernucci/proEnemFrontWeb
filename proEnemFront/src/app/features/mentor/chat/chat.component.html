@@ -1,0 +1,49 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="mentor-info">
+      <div class="avatar">
+        🤖
+      </div>
+      <div class="titles">
+        <h2>Mentor IA</h2>
+        <span class="status-online"><span class="dot"></span> Online</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-messages" #scrollMe>
+    <div class="message-wrapper" *ngFor="let msg of messages" [class.user]="msg.sender === 'user'" [class.ai]="msg.sender === 'ai'">
+      <div class="message-bubble">
+        <p>{{ msg.text }}</p>
+        <span class="timestamp">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="message-wrapper ai typing-wrapper" *ngIf="isLoading">
+      <div class="message-bubble typing-bubble">
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-footer">
+    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="input-form">
+      <textarea 
+        formControlName="message" 
+        rows="1" 
+        placeholder="Escreva sua dúvida aqui... (Enter para enviar)" 
+        (keydown)="onEnter($event)"
+        class="chat-input"
+        [attr.disabled]="isLoading ? '' : null">
+      </textarea>
+      <button type="submit" [disabled]="chatForm.invalid || isLoading" class="send-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="send-icon">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>

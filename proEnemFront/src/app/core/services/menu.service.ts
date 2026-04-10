@@ -56,11 +56,12 @@ export class MenuService {
         {
           menuValue: 'Registros de estudos',
           icon: 'file-text',
-          base: 'questoes',
+          base: 'registro-estudos',
           hasSubRoute: true,
           showSubRoute: false,
           subMenus: [
             { menuValue: 'Matérias', route: '/materias/listar', base: 'listar' },
+            { menuValue: 'Tracker', route: '/registro-estudos/tracker', base: 'tracker' },
           ],
         },
         {
