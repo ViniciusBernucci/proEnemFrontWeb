@@ -34,6 +34,13 @@ export class MascotComponent implements OnInit, OnDestroy {
       durationSeconds: 10, // 1 minuto sentado
       label: 'sit',
     },
+      {
+      rows: [19],      // percorre linha 18 completa, depois linha 19, em loop
+      framesPerRow: 3,
+      fps: 2,              // 2 frames por segundo
+      durationSeconds: 300,// 5 minutos
+      label: 'play',
+    },
     {
       rows: [18, 19],      // percorre linha 18 completa, depois linha 19, em loop
       framesPerRow: 5,

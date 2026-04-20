@@ -2,11 +2,12 @@
 
 ## Visão Geral
 
-O mascote é um gato pixel art fixo no canto inferior esquerdo da tela. Ele percorre uma sequência de animações configurável, cada uma com sua própria linha do sprite sheet, velocidade (fps) e duração.
+O mascote é um gato pixel art fixo no canto inferior esquerdo da tela. Ele percorre uma sequência de animações configurável, cada uma com sua própria linha do sprite sheet, velocidade (fps) e duração. O usuário pode ocultá-lo pelo botão no header.
 
 **Componente:** `src/app/shared/mascot/mascot.component.ts`  
 **Template:** `src/app/shared/mascot/mascot.component.html`  
 **Estilos:** `src/app/shared/mascot/mascot.component.scss`  
+**Serviço:** `src/app/shared/mascot/mascot.service.ts`  
 **Sprite sheet:** `src/assets/images/mascot.png`
 
 ---
@@ -30,9 +31,20 @@ O mascote percorre os passos abaixo em ordem e volta ao início ao terminar.
 | Passo | Linha(s) | Frames | FPS | Duração | Comportamento |
 |---|---|---|---|---|---|
 | 1 | 13 | 8 | 0.5 (1 frame/2s) | 1 min | Gato sentado |
-| 2 | 7 | 14 | 0.2 (1 frame/5s) | 1 min | Gato dormindo |
-| 3 | 18 → 19 | 8 cada | 2 fps | 5 min | Animação dupla (18 completa, depois 19, em loop) |
+| 2 | 7 | 7 | 0.2 (1 frame/5s) | 1 min | Gato dormindo |
+| 3 | 18 → 19 | 6 cada | 2 fps | 5 min | Animação dupla (18 completa, depois 19, em loop) |
 | 4 | 20 | 5 | 1 fps | 1 min | Andando |
+
+---
+
+## Botão de Visibilidade
+
+O header possui um botão ao lado do toggle de dark mode que permite ocultar/exibir o mascote. O estado é gerenciado pelo `MascotService` (`providedIn: 'root'`), compartilhado entre o header e o componente do mascote.
+
+- Ícone `ti-eye` → mascote visível (clique para ocultar)
+- Ícone `ti-eye-off` → mascote oculto (clique para exibir)
+
+Para remover o botão do header, delete o bloco `<!-- Mascote Toggle -->` em `header.component.html`.
 
 ---
 
@@ -78,12 +90,12 @@ readonly sequence: AnimationStep[] = [
 
 ### 3. Usar múltiplas linhas em sequência num mesmo passo
 
-Passe mais de uma linha em `rows`. O mascote percorre linha 18 completa, depois linha 19 completa, e repete durante `durationSeconds`:
+Passe mais de uma linha em `rows`. O mascote percorre a linha 18 completa, depois a linha 19 completa, e repete durante `durationSeconds`:
 
 ```ts
 {
   rows: [18, 19],
-  framesPerRow: 8,   // mesmo número de frames para ambas
+  framesPerRow: 6,   // mesmo número de frames para ambas
   fps: 2,
   durationSeconds: 300,
   label: 'play',
@@ -137,30 +149,11 @@ Edite `mascot.component.scss`:
 ```scss
 .mascot-wrapper {
   position: fixed;
-  left: 16px;    // distância da borda esquerda
-  bottom: 5px;   // distância da borda inferior
-  z-index: 1050; // sobreposição (aumentar se ficar atrás de outros elementos)
+  left: 4px;      // distância da borda esquerda
+  bottom: -30px;  // distância da borda inferior (negativo = mais próximo da borda)
+  z-index: 1050;  // sobreposição (aumentar se ficar atrás de outros elementos)
 }
 ```
-
----
-
-### 7. Alterar a animação de "flutuação"
-
-O mascote tem uma animação CSS independente de subir e descer suavemente. Para ajustar:
-
-```scss
-@keyframes mascot-float {
-  0%, 100% { transform: translateY(0);    }
-  50%       { transform: translateY(-6px); } // altura do "salto" em px
-}
-
-.mascot-sprite {
-  animation: mascot-float 3s ease-in-out infinite; // 3s = velocidade do balanço
-}
-```
-
-Para desativar a flutuação, remova a linha `animation: ...` do `.mascot-sprite`.
 
 ---
 
@@ -169,7 +162,7 @@ Para desativar a flutuação, remova a linha `animation: ...` do `.mascot-sprite
 ```ts
 interface AnimationStep {
   rows: number[];                  // índices das linhas do sprite (base 0)
-  framesPerRow: number | number[]; // frames por linha
+  framesPerRow: number | number[]; // frames por linha (único ou array por linha)
   fps: number;                     // frames por segundo
   durationSeconds: number;         // duração do passo em segundos
   label: string;                   // nome descritivo (livre)
