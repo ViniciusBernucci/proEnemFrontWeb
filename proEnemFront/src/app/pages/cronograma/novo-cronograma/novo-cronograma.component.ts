@@ -168,7 +168,7 @@ export class NovoCronogramaComponent implements OnInit {
         next: () => {
           this.isLoading = false;
           this.successMessage = 'Cronograma criado com sucesso!';
-          setTimeout(() => this.router.navigate(['/cronograma']), 1500);
+          setTimeout(() => this.router.navigate(['/simulados/listar']), 1500);
         },
         error: (error) => {
           if (error.status === 422 && error.error?.errors) {

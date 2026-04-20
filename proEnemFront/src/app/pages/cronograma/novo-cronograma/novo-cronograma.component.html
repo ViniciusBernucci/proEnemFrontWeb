@@ -1,96 +1,96 @@
 <div class="content pb-0">
 
   <!-- Page Header -->
-  <div class="d-md-flex d-block align-items-center justify-content-between mb-4">
-    <div class="my-auto mb-2">
-      <h3 class="mb-1">Criar Cronograma de Estudos</h3>
-      <nav aria-label="breadcrumb" class="d-flex align-items-center">
-        <ol class="breadcrumb mb-0">
+  <div class="wizard-page-header mb-4">
+    <div class="wizard-page-header-icon">
+      <i class="ti ti-calendar-plus"></i>
+    </div>
+    <div>
+      <h3 class="mb-0">Criar Cronograma de Estudos</h3>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 mt-1">
           <li class="breadcrumb-item"><a href="javascript:void(0);">Início</a></li>
-          <li class="breadcrumb-item"><a href="javascript:void(0);">Cronograma de Estudos</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Criar Cronograma</li>
+          <li class="breadcrumb-item"><a href="javascript:void(0);">Cronogramas</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Criar</li>
         </ol>
       </nav>
     </div>
   </div>
 
   <!-- Stepper -->
-  <div class="card mb-4">
-    <div class="card-body p-4">
-      <div class="stepper-wrapper">
+  <div class="card wizard-stepper-card mb-4">
+    <div class="card-body py-4 px-4">
+      <div class="stepper-track-wrap mb-4">
+        <div class="stepper-track">
+          <div class="stepper-track-fill" [style.width.%]="((etapaAtual - 1) / (totalEtapas - 1)) * 100"></div>
+        </div>
+      </div>
+      <div class="stepper-steps">
         @for (i of [1, 2, 3, 4, 5]; track i) {
-          <div class="stepper-item"
-               [class.completed]="etapaConcluida(i)"
-               [class.active]="etapaAtiva(i)">
-            <div class="stepper-circle">
+          <div class="stepper-step"
+               [class.is-completed]="etapaConcluida(i)"
+               [class.is-active]="etapaAtiva(i)">
+            <div class="stepper-dot">
               @if (etapaConcluida(i)) {
                 <i class="ti ti-check"></i>
               } @else {
                 {{ i }}
               }
             </div>
-            <div class="stepper-label">
+            <span class="stepper-label">
               @switch (i) {
                 @case (1) { Período }
-                @case (2) { Dias da Semana }
+                @case (2) { Dias }
                 @case (3) { Disciplinas }
                 @case (4) { Carga Horária }
-                @case (5) { Gerar Cronograma }
+                @case (5) { Confirmar }
               }
-            </div>
-            @if (i < 5) {
-              <div class="stepper-line"></div>
-            }
+            </span>
           </div>
         }
       </div>
     </div>
   </div>
 
-  <!-- Conteúdo da Etapa -->
-  <div class="card">
-    <div class="card-body p-4">
+  <!-- Wizard Body -->
+  <div class="card wizard-body-card">
+    <div class="card-body p-4 p-lg-5">
 
-      <!-- Etapa 1: Período -->
+      <!-- ── Etapa 1: Período ─────────────────────────────────── -->
       @if (etapaAtual === 1) {
-        <div class="etapa-conteudo">
-          <div class="etapa-header mb-4">
-            <span class="badge bg-primary text-white mb-2">Etapa 1 de 5</span>
-            <h4 class="mb-1">Período do Cronograma</h4>
-            <p class="text-muted mb-0">Defina a data de início e término do seu cronograma de estudos.</p>
+        <div class="step-content">
+          <div class="step-eyebrow">
+            <span class="step-num">01</span>
+            <span class="step-num-sep">/ 05</span>
           </div>
+          <h4 class="step-title">Período do Cronograma</h4>
+          <p class="step-desc">Dê um nome e defina as datas de início e término do seu plano de estudos.</p>
 
-          <div class="row row-gap-3">
+          <div class="row g-3 mt-1">
             <div class="col-12">
-              <label class="form-label fw-semibold">
-                <i class="ti ti-pencil me-1 text-primary"></i>Nome do Cronograma
-              </label>
+              <label class="form-label fw-semibold">Nome do cronograma</label>
               <input
                 type="text"
-                class="form-control"
+                class="form-control form-control-lg"
                 [(ngModel)]="nomeCronograma"
-                placeholder="Ex: Meu cronograma ENEM 2025"
+                placeholder="Ex: Meu ENEM 2025"
                 maxlength="100"
               />
             </div>
             <div class="col-md-6">
-              <label class="form-label fw-semibold">
-                <i class="ti ti-calendar-event me-1 text-primary"></i>Data de Início
-              </label>
+              <label class="form-label fw-semibold">Data de início</label>
               <input
                 type="date"
-                class="form-control"
+                class="form-control form-control-lg"
                 [(ngModel)]="dataInicio"
                 [max]="dataFim || ''"
               />
             </div>
             <div class="col-md-6">
-              <label class="form-label fw-semibold">
-                <i class="ti ti-calendar-check me-1 text-primary"></i>Data de Término
-              </label>
+              <label class="form-label fw-semibold">Data de término</label>
               <input
                 type="date"
-                class="form-control"
+                class="form-control form-control-lg"
                 [(ngModel)]="dataFim"
                 [min]="dataInicio || ''"
               />
@@ -98,182 +98,193 @@
           </div>
 
           @if (dataInicio && dataFim && dataFim < dataInicio) {
-            <div class="alert alert-danger mt-3 mb-0 d-flex align-items-center gap-2">
+            <div class="feedback-box feedback-danger mt-3">
               <i class="ti ti-alert-circle"></i>
-              A data de término deve ser igual ou posterior à data de início.
+              <span>A data de término deve ser igual ou posterior à data de início.</span>
             </div>
           }
-
           @if (dataInicio && dataFim && dataFim >= dataInicio) {
-            <div class="alert alert-success mt-3 mb-0 d-flex align-items-center gap-2">
+            <div class="feedback-box feedback-success mt-3">
               <i class="ti ti-circle-check"></i>
-              Período selecionado com sucesso!
+              <span>Período válido selecionado.</span>
             </div>
           }
         </div>
       }
 
-      <!-- Etapa 2: Dias da Semana -->
+      <!-- ── Etapa 2: Dias da Semana ──────────────────────────── -->
       @if (etapaAtual === 2) {
-        <div class="etapa-conteudo">
-          <div class="etapa-header mb-4">
-            <span class="badge bg-primary text-white mb-2">Etapa 2 de 5</span>
-            <h4 class="mb-1">Dias de Estudo</h4>
-            <p class="text-muted mb-0">Selecione os dias da semana em que deseja estudar.</p>
+        <div class="step-content">
+          <div class="step-eyebrow">
+            <span class="step-num">02</span>
+            <span class="step-num-sep">/ 05</span>
+          </div>
+          <h4 class="step-title">Dias de Estudo</h4>
+          <p class="step-desc">Escolha os dias da semana em que você vai dedicar tempo aos estudos.</p>
+
+          <div class="days-grid mt-3">
+            @for (dia of diasSemana; track dia.valor) {
+              <button
+                type="button"
+                class="day-btn"
+                [class.is-selected]="dia.selecionado"
+                (click)="dia.selecionado = !dia.selecionado"
+                [attr.aria-pressed]="dia.selecionado"
+              >
+                <span class="day-abbr">{{ dia.label.substring(0, 3) }}</span>
+                <span class="day-full">{{ dia.label }}</span>
+                @if (dia.selecionado) {
+                  <span class="day-check"><i class="ti ti-check"></i></span>
+                }
+              </button>
+            }
           </div>
 
-          <div class="dias-semana-grid mb-4">
-            @for (dia of diasSemana; track dia.valor) {
-              <div class="dia-card" [class.selecionado]="dia.selecionado" (click)="dia.selecionado = !dia.selecionado">
-                <i class="ti ti-calendar-week mb-1"></i>
-                <span>{{ dia.label }}</span>
+          <div class="options-group mt-4">
+            <div class="option-toggle" [class.is-on]="estudarFeriados" (click)="estudarFeriados = !estudarFeriados">
+              <div class="option-toggle-info">
+                <span class="option-toggle-icon"><i class="ti ti-calendar-off"></i></span>
+                <div>
+                  <strong>Estudar nos feriados</strong>
+                  <p>Feriados nacionais serão incluídos nos dias selecionados.</p>
+                </div>
+              </div>
+              <div class="toggle-pill" [class.is-on]="estudarFeriados">
+                <div class="toggle-thumb"></div>
+              </div>
+            </div>
+
+            <div class="option-toggle" [class.is-on]="tirarFerias" (click)="tirarFerias = !tirarFerias">
+              <div class="option-toggle-info">
+                <span class="option-toggle-icon"><i class="ti ti-beach"></i></span>
+                <div>
+                  <strong>Quero tirar férias</strong>
+                  <p>Sem aulas entre <strong>21/07</strong> e <strong>04/08</strong>.</p>
+                </div>
+              </div>
+              <div class="toggle-pill" [class.is-on]="tirarFerias">
+                <div class="toggle-thumb"></div>
+              </div>
+            </div>
+          </div>
+
+          @if (diasSelecionados.length > 0) {
+            <div class="feedback-box feedback-success mt-3">
+              <i class="ti ti-circle-check"></i>
+              <span>
+                <strong>{{ diasSelecionados.length }}</strong>
+                {{ diasSelecionados.length === 1 ? 'dia selecionado' : 'dias selecionados' }}:
+                {{ diasSelecionadosLabel }}
+              </span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Etapa 3: Disciplinas ──────────────────────────────── -->
+      @if (etapaAtual === 3) {
+        <div class="step-content">
+          <div class="step-eyebrow">
+            <span class="step-num">03</span>
+            <span class="step-num-sep">/ 05</span>
+          </div>
+          <h4 class="step-title">Disciplinas</h4>
+          <p class="step-desc">Selecione as matérias que farão parte do seu cronograma.</p>
+
+          <div class="areas-container mt-3">
+            @for (area of areas; track area) {
+              <div class="area-group">
+                <div class="area-header">
+                  <i class="ti ti-books"></i>
+                  <span>{{ area }}</span>
+                </div>
+                <div class="disciplines-grid">
+                  @for (disciplina of disciplinasPorArea(area); track disciplina.id) {
+                    <button
+                      type="button"
+                      class="discipline-btn"
+                      [class.is-selected]="disciplina.selecionada"
+                      (click)="disciplina.selecionada = !disciplina.selecionada"
+                      [attr.aria-pressed]="disciplina.selecionada"
+                    >
+                      <i class="ti ti-book"></i>
+                      <span>{{ disciplina.nome }}</span>
+                      @if (disciplina.selecionada) {
+                        <span class="discipline-check"><i class="ti ti-check"></i></span>
+                      }
+                    </button>
+                  }
+                </div>
               </div>
             }
           </div>
 
-          <div class="card bg-light border-0 p-3 mb-3">
-            <div class="form-check form-switch d-flex align-items-center gap-3">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="estudarFeriados"
-                [(ngModel)]="estudarFeriados"
-              />
-              <label class="form-check-label fw-semibold" for="estudarFeriados">
-                <i class="ti ti-calendar-off me-1 text-warning"></i>
-                Estudar nos feriados
-              </label>
-            </div>
-            <p class="text-muted small mb-0 mt-1 ms-1">
-              Quando ativado, os feriados nacionais serão incluídos no cronograma nos dias que você selecionou.
-            </p>
-          </div>
-
-          <div class="card bg-light border-0 p-3">
-            <div class="form-check form-switch d-flex align-items-center gap-3">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="tirarFerias"
-                [(ngModel)]="tirarFerias"
-              />
-              <label class="form-check-label fw-semibold" for="tirarFerias">
-                <i class="ti ti-beach me-1 text-info"></i>
-                Quero ter férias
-              </label>
-            </div>
-            <p class="text-muted small mb-0 mt-1 ms-1">
-              Quando ativado, não serão planejadas aulas entre <strong>21 de julho</strong> e <strong>04 de agosto</strong>.
-            </p>
-          </div>
-
-          @if (diasSelecionados.length > 0) {
-            <div class="alert alert-success mt-3 mb-0 d-flex align-items-center gap-2">
+          @if (disciplinasSelecionadas.length > 0) {
+            <div class="feedback-box feedback-success mt-4">
               <i class="ti ti-circle-check"></i>
-              {{ diasSelecionados.length }} {{ diasSelecionados.length === 1 ? 'dia selecionado' : 'dias selecionados' }}:
-              {{ diasSelecionadosLabel }}
+              <span>
+                <strong>{{ disciplinasSelecionadas.length }}</strong>
+                {{ disciplinasSelecionadas.length === 1 ? 'disciplina selecionada' : 'disciplinas selecionadas' }}
+              </span>
             </div>
           }
         </div>
       }
 
-      <!-- Etapa 3: Disciplinas -->
-      @if (etapaAtual === 3) {
-        <div class="etapa-conteudo">
-          <div class="etapa-header mb-4">
-            <span class="badge bg-primary text-white mb-2">Etapa 3 de 5</span>
-            <h4 class="mb-1">Disciplinas</h4>
-            <p class="text-muted mb-0">Selecione as disciplinas que deseja incluir no seu cronograma.</p>
+      <!-- ── Etapa 4: Carga Horária ─────────────────────────────── -->
+      @if (etapaAtual === 4) {
+        <div class="step-content">
+          <div class="step-eyebrow">
+            <span class="step-num">04</span>
+            <span class="step-num-sep">/ 05</span>
           </div>
+          <h4 class="step-title">Carga Horária Diária</h4>
+          <p class="step-desc">Quantas horas por dia você consegue dedicar aos estudos?</p>
 
-          @for (area of areas; track area) {
-            <div class="mb-4">
-              <h6 class="text-primary fw-bold mb-3 d-flex align-items-center gap-2">
-                <i class="ti ti-books"></i>
-                {{ area }}
-              </h6>
-              <div class="disciplinas-grid">
-                @for (disciplina of disciplinasPorArea(area); track disciplina.id) {
-                  <div
-                    class="disciplina-card"
-                    [class.selecionada]="disciplina.selecionada"
-                    (click)="disciplina.selecionada = !disciplina.selecionada"
-                  >
-                    <i class="ti ti-book mb-1" [class.ti-book-2]="disciplina.selecionada"></i>
-                    <span>{{ disciplina.nome }}</span>
-                    @if (disciplina.selecionada) {
-                      <i class="ti ti-check check-icon"></i>
-                    }
-                  </div>
-                }
+          <div class="hours-selector mt-4">
+            <div class="hours-display">
+              <div class="hours-value">{{ horasEstudoLabel }}</div>
+              <div class="hours-label">por dia</div>
+            </div>
+
+            <div class="range-wrapper mt-4">
+              <input
+                type="range"
+                class="styled-range"
+                min="50"
+                max="720"
+                step="10"
+                [(ngModel)]="minutosEstudoPorDia"
+              />
+              <div class="range-ticks">
+                <span style="left: 0%">50min</span>
+                <span style="left: 10.45%">2h</span>
+                <span style="left: 28.36%">4h</span>
+                <span style="left: 46.27%">6h</span>
+                <span style="left: 64.18%">8h</span>
+                <span style="left: 82.09%">10h</span>
+                <span style="left: 100%">12h</span>
               </div>
             </div>
-          }
 
-          @if (disciplinasSelecionadas.length > 0) {
-            <div class="alert alert-success mb-0 d-flex align-items-center gap-2">
-              <i class="ti ti-circle-check"></i>
-              {{ disciplinasSelecionadas.length }} {{ disciplinasSelecionadas.length === 1 ? 'disciplina selecionada' : 'disciplinas selecionadas' }}
-            </div>
-          }
-        </div>
-      }
-
-      <!-- Etapa 4: Carga Horária -->
-      @if (etapaAtual === 4) {
-        <div class="etapa-conteudo">
-          <div class="etapa-header mb-4">
-            <span class="badge bg-primary text-white mb-2">Etapa 4 de 5</span>
-            <h4 class="mb-1">Carga Horária Diária</h4>
-            <p class="text-muted mb-0">Quantas horas você pretende estudar por dia?</p>
-          </div>
-
-          <div class="horas-slider-container">
-            <div class="horas-display mb-4">
-              <i class="ti ti-clock-hour-4 text-primary"></i>
-              <span class="horas-valor">{{ horasEstudoLabel }}</span>
-              <span class="horas-sub text-muted">por dia</span>
-            </div>
-
-            <input
-              type="range"
-              class="form-range horas-range"
-              min="50"
-              max="720"
-              step="10"
-              [(ngModel)]="minutosEstudoPorDia"
-            />
-
-            <div class="horas-marcadores">
-              <span style="left: 0%">50min</span>
-              <span style="left: 10.45%">2h</span>
-              <span style="left: 28.36%">4h</span>
-              <span style="left: 46.27%">6h</span>
-              <span style="left: 64.18%">8h</span>
-              <span style="left: 82.09%">10h</span>
-              <span style="left: 100%">12h</span>
-            </div>
-
-            <div class="horas-dicas mt-4">
-              <div class="dica-card" [class.dica-ativa]="minutosEstudoPorDia >= 50 && minutosEstudoPorDia < 180">
-                <i class="ti ti-mood-smile text-success"></i>
+            <div class="intensity-cards mt-5">
+              <div class="intensity-card" [class.is-active]="minutosEstudoPorDia >= 50 && minutosEstudoPorDia < 180">
+                <div class="intensity-icon">😊</div>
                 <strong>Leve</strong>
                 <span>50min – 2h</span>
               </div>
-              <div class="dica-card" [class.dica-ativa]="minutosEstudoPorDia >= 180 && minutosEstudoPorDia < 360">
-                <i class="ti ti-flame text-warning"></i>
+              <div class="intensity-card" [class.is-active]="minutosEstudoPorDia >= 180 && minutosEstudoPorDia < 360">
+                <div class="intensity-icon">🔥</div>
                 <strong>Moderado</strong>
                 <span>2h – 6h</span>
               </div>
-              <div class="dica-card" [class.dica-ativa]="minutosEstudoPorDia >= 360 && minutosEstudoPorDia < 540">
-                <i class="ti ti-bolt text-orange"></i>
+              <div class="intensity-card" [class.is-active]="minutosEstudoPorDia >= 360 && minutosEstudoPorDia < 540">
+                <div class="intensity-icon">⚡</div>
                 <strong>Intenso</strong>
                 <span>6h – 9h</span>
               </div>
-              <div class="dica-card" [class.dica-ativa]="minutosEstudoPorDia >= 540">
-                <i class="ti ti-trophy text-danger"></i>
+              <div class="intensity-card" [class.is-active]="minutosEstudoPorDia >= 540">
+                <div class="intensity-icon">🏆</div>
                 <strong>Maratonista</strong>
                 <span>9h – 12h</span>
               </div>
@@ -282,93 +293,89 @@
         </div>
       }
 
-      <!-- Etapa 5: Gerar Cronograma -->
+      <!-- ── Etapa 5: Confirmar ─────────────────────────────────── -->
       @if (etapaAtual === 5) {
-        <div class="etapa-conteudo text-center">
-          <div class="etapa-header mb-4">
-            <span class="badge bg-success text-black mb-2">Etapa 5 de 5</span>
-            <h4 class="mb-1">Tudo Pronto!</h4>
-            <p class="text-muted mb-0">Confira o resumo e gere seu cronograma de estudos personalizado.</p>
+        <div class="step-content">
+          <div class="step-eyebrow">
+            <span class="step-num">05</span>
+            <span class="step-num-sep">/ 05</span>
           </div>
+          <h4 class="step-title">Tudo pronto!</h4>
+          <p class="step-desc">Confira o resumo antes de gerar seu cronograma personalizado.</p>
 
-          <!-- Resumo -->
-          <div class="resumo-grid mb-4">
-            <div class="resumo-item">
-              <i class="ti ti-pencil text-primary"></i>
-              <div>
-                <small class="text-muted d-block">Nome</small>
-                <strong>{{ nomeCronograma }}</strong>
+          <div class="summary-list mt-4">
+            <div class="summary-row">
+              <div class="summary-row-icon icon-primary"><i class="ti ti-pencil"></i></div>
+              <div class="summary-row-body">
+                <span class="summary-label">Nome</span>
+                <span class="summary-value">{{ nomeCronograma }}</span>
               </div>
             </div>
-            <div class="resumo-item">
-              <i class="ti ti-calendar-event text-primary"></i>
-              <div>
-                <small class="text-muted d-block">Período</small>
-                <strong>{{ dataInicio | date:'dd/MM/yyyy' }} → {{ dataFim | date:'dd/MM/yyyy' }}</strong>
-              </div>
-            </div>
-            <div class="resumo-item">
-              <i class="ti ti-calendar-week text-success"></i>
-              <div>
-                <small class="text-muted d-block">Dias de estudo</small>
-                <strong>{{ diasSelecionadosLabel }}</strong>
-                @if (estudarFeriados) {
-                  <span class="badge bg-warning ms-1 text-dark">+ Feriados</span>
-                }
-                @if (tirarFerias) {
-                  <span class="badge bg-info ms-1 text-dark">Férias: 21/07 – 04/08</span>
-                }
-              </div>
-            </div>
-            <div class="resumo-item">
-              <i class="ti ti-clock-hour-4 text-warning"></i>
-              <div>
-                <small class="text-muted d-block">Carga horária diária</small>
-                <strong>{{ horasEstudoLabel }}</strong>
-              </div>
-            </div>
-            <div class="resumo-item">
-              <i class="ti ti-books text-info"></i>
-              <div>
-                <small class="text-muted d-block">Disciplinas</small>
-                <strong>{{ disciplinasSelecionadasNomes }}</strong>
-              </div>
-            </div>
-          </div>
 
-          <!-- Mensagens de erro -->
-          @if (errorMessages.length > 0) {
-            <div class="alert alert-danger d-flex align-items-start gap-2 mb-3">
-              <i class="ti ti-alert-circle mt-1"></i>
-              <div class="flex-grow-1">
-                <strong class="d-block mb-1">Erro ao gerar cronograma:</strong>
-                <ul class="mb-0 ps-3">
-                  @for (message of errorMessages; track message) {
-                    <li>{{ message }}</li>
+            <div class="summary-row">
+              <div class="summary-row-icon icon-primary"><i class="ti ti-calendar-event"></i></div>
+              <div class="summary-row-body">
+                <span class="summary-label">Período</span>
+                <span class="summary-value">{{ dataInicio | date:'dd/MM/yyyy' }} → {{ dataFim | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <div class="summary-row-icon icon-success"><i class="ti ti-calendar-week"></i></div>
+              <div class="summary-row-body">
+                <span class="summary-label">Dias de estudo</span>
+                <div class="d-flex flex-wrap align-items-center gap-1 mt-1">
+                  <span class="summary-value">{{ diasSelecionadosLabel }}</span>
+                  @if (estudarFeriados) {
+                    <span class="summary-pill pill-warning">+ Feriados</span>
                   }
+                  @if (tirarFerias) {
+                    <span class="summary-pill pill-info">Férias jul/ago</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <div class="summary-row-icon icon-warning"><i class="ti ti-clock-hour-4"></i></div>
+              <div class="summary-row-body">
+                <span class="summary-label">Carga horária</span>
+                <span class="summary-value">{{ horasEstudoLabel }} por dia</span>
+              </div>
+            </div>
+
+            <div class="summary-row">
+              <div class="summary-row-icon icon-info"><i class="ti ti-books"></i></div>
+              <div class="summary-row-body">
+                <span class="summary-label">Disciplinas ({{ disciplinasSelecionadas.length }})</span>
+                <div class="discipline-tags mt-1">
+                  @for (d of disciplinasSelecionadas; track d.id) {
+                    <span class="discipline-tag">{{ d.nome }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          @if (errorMessages.length > 0) {
+            <div class="feedback-box feedback-danger mt-4">
+              <i class="ti ti-alert-circle"></i>
+              <div>
+                <strong class="d-block mb-1">Erros ao gerar:</strong>
+                <ul class="mb-0 ps-3">
+                  @for (msg of errorMessages; track msg) { <li>{{ msg }}</li> }
                 </ul>
               </div>
             </div>
           }
-
           @if (errorMessage) {
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+            <div class="feedback-box feedback-danger mt-4">
               <i class="ti ti-alert-circle"></i>
               <span>{{ errorMessage }}</span>
             </div>
           }
-
-          @if (isLoading) {
-            <div class="alert alert-info d-flex align-items-center gap-2 mb-3">
-              <div class="spinner-border spinner-border-sm" role="status">
-                <span class="visually-hidden">Carregando...</span>
-              </div>
-              <span>Gerando seu cronograma personalizado...</span>
-            </div>
-          }
-
           @if (successMessage) {
-            <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+            <div class="feedback-box feedback-success mt-4">
               <i class="ti ti-circle-check"></i>
               <span>{{ successMessage }}</span>
             </div>
@@ -378,37 +385,49 @@
 
     </div>
 
-    <!-- Rodapé com navegação -->
-    <div class="card-footer d-flex justify-content-between align-items-center py-3 px-4">
+    <!-- Footer de navegação -->
+    <div class="wizard-footer">
       <button
-        class="btn btn-outline-secondary"
-        [disabled]="etapaAtual === 1"
+        type="button"
+        class="btn-nav btn-nav-back"
+        [class.btn-nav-invisible]="etapaAtual === 1"
         (click)="etapaAnterior()"
       >
-        <i class="ti ti-arrow-left me-1"></i>Voltar
+        <i class="ti ti-arrow-left"></i>
+        <span>Voltar</span>
       </button>
 
-      <span class="text-muted small">Etapa {{ etapaAtual }} de {{ totalEtapas }}</span>
+      <div class="step-dots">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="step-dot-mini"
+               [class.is-active]="i === etapaAtual"
+               [class.is-done]="i < etapaAtual"></div>
+        }
+      </div>
 
       @if (etapaAtual < totalEtapas) {
         <button
-          class="btn btn-primary"
+          type="button"
+          class="btn-nav btn-nav-next"
           [disabled]="!podeProsseguir()"
           (click)="proximaEtapa()"
         >
-          Próximo<i class="ti ti-arrow-right ms-1"></i>
+          <span>Próximo</span>
+          <i class="ti ti-arrow-right"></i>
         </button>
       } @else {
         <button
-          class="btn btn-success"
+          type="button"
+          class="btn-nav btn-nav-generate"
           [disabled]="isLoading"
           (click)="gerarCronograma()"
         >
           @if (isLoading) {
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Gerando...
+            <span class="spinner-border spinner-border-sm" role="status"></span>
+            <span>Gerando...</span>
           } @else {
-            <i class="ti ti-sparkles me-1"></i>Gerar Cronograma
+            <i class="ti ti-sparkles"></i>
+            <span>Gerar Cronograma</span>
           }
         </button>
       }

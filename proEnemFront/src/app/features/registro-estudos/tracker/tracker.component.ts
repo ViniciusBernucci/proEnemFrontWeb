@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TrackerService, StudyTask } from '../../../core/services/tracker.service';
@@ -14,6 +14,7 @@ import confetti from 'canvas-confetti';
 })
 export class TrackerComponent implements OnInit, OnDestroy {
   private trackerService = inject(TrackerService);
+  private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
 
   viewMode: 'daily' | 'weekly' = 'daily';
@@ -72,14 +73,12 @@ export class TrackerComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (tasks: StudyTask[]) => {
-           // Mapeamento Semanal
            this.weeklyTasks = this.weekDates.map(date => ({
               date,
               tasks: tasks.filter((t: StudyTask) => t.date === date)
            }));
-           
-           // Mapeamento Diário
            this.dailyTasks = tasks.filter((t: StudyTask) => t.date === this.today);
+           this.cdr.markForCheck();
         },
         error: (err: any) => {
            if (err.status === 404) {
@@ -87,6 +86,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
            } else {
              this.error = err?.error?.message || 'Erro ao carregar os dados do tracker.';
            }
+           this.cdr.markForCheck();
         }
       });
   }

@@ -1,8 +1,23 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CronogramaService } from '../../../core/services/cronograma.service';
 import { CronogramaListItem } from '../../../core/models/cronograma.model';
+
+export interface ToastMessage {
+  id: number;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  detail: string;
+}
+
+export interface ConfirmConfig {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  confirmStyle: 'danger' | 'primary';
+  onConfirm: () => void;
+}
 
 @Component({
   selector: 'app-listar-cronograma',
@@ -14,13 +29,17 @@ import { CronogramaListItem } from '../../../core/models/cronograma.model';
 export class ListarCronogramaComponent implements OnInit {
   private cronogramaService = inject(CronogramaService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   cronogramas: CronogramaListItem[] = [];
   isLoading = true;
   errorMessage = '';
-
-  // Cronograma selecionado para impressão (PDF)
   isGeneratingPdf = false;
+
+  toasts: ToastMessage[] = [];
+  private toastCounter = 0;
+
+  confirmConfig: ConfirmConfig | null = null;
 
   ngOnInit(): void {
     this.carregarCronogramas();
@@ -35,6 +54,7 @@ export class ListarCronogramaComponent implements OnInit {
         next: (data) => {
           this.cronogramas = data;
           this.isLoading = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.isLoading = false;
@@ -43,6 +63,7 @@ export class ListarCronogramaComponent implements OnInit {
           } else {
             this.errorMessage = error.error?.message ?? 'Erro ao carregar cronogramas.';
           }
+          this.cdr.markForCheck();
         }
       });
   }
@@ -52,50 +73,62 @@ export class ListarCronogramaComponent implements OnInit {
   }
 
   deletarCronograma(cronograma: CronogramaListItem): void {
-    const confirmar = confirm(`Deseja realmente excluir o cronograma "${cronograma.nome}"?`);
-    if (!confirmar) return;
-
-    this.cronogramaService.deletarCronograma(cronograma.id)
-      .subscribe({
-        next: () => {
-          this.carregarCronogramas();
-        },
-        error: () => {
-          alert('Erro ao excluir o cronograma. Tente novamente.');
-        }
-      });
+    this.confirmConfig = {
+      title: 'Excluir cronograma',
+      message: `Deseja realmente excluir o cronograma <strong>${cronograma.nome}</strong>? Esta ação não pode ser desfeita.`,
+      confirmLabel: 'Excluir',
+      confirmStyle: 'danger',
+      onConfirm: () => {
+        this.cronogramaService.deletarCronograma(cronograma.id).subscribe({
+          next: () => {
+            this.showToast('success', 'Cronograma excluído', `"${cronograma.nome}" foi removido com sucesso.`);
+            this.carregarCronogramas();
+          },
+          error: () => {
+            this.showToast('error', 'Erro ao excluir', 'Não foi possível excluir o cronograma. Tente novamente.');
+          }
+        });
+      }
+    };
+    this.cdr.markForCheck();
   }
 
   toggleAtivo(event: Event, cronograma: CronogramaListItem): void {
-    // Evita que o checkbox se altere visualmente antes da confirmação
     event.preventDefault();
-
-    if (cronograma.ativo) return; // Ja esta ativo, nao faz nada
+    if (cronograma.ativo) return;
 
     const atual = this.cronogramas.find(c => c.ativo);
-    if (atual) {
-      const confirmar = confirm(`O cronograma "${atual.nome}" está atualmente ativo.\n\nAo ativar este novo, o método anterior será desabilitado no seu Tracker de Estudos. Você perderá temporariamente a visão do progresso antigo.\n\nDeseja continuar?`);
-      if (!confirmar) return;
-    }
 
-    this.cronogramaService.ativarCronograma(cronograma.id).subscribe({
-      next: () => {
-        // Atualiza a lista localmente (Angular cuidará do render agora verdadeiro)
-        this.cronogramas.forEach(c => {
-          c.ativo = (c.id === cronograma.id);
-        });
-        alert(`Sucesso! O cronograma "${cronograma.nome}" agora é o seu plano de estudos principal no Tracker!`);
-      },
-      error: () => {
-        alert('Erro ao ativar o cronograma. Tente novamente.');
-      }
-    });
+    const doAtivacao = () => {
+      this.cronogramaService.ativarCronograma(cronograma.id).subscribe({
+        next: () => {
+          this.cronogramas = this.cronogramas.map(c => ({ ...c, ativo: c.id === cronograma.id }));
+          this.showToast('success', 'Cronograma ativado!', `"${cronograma.nome}" agora é seu plano de estudos principal no Tracker.`);
+        },
+        error: () => {
+          this.showToast('error', 'Erro ao ativar', 'Não foi possível ativar o cronograma. Tente novamente.');
+        }
+      });
+    };
+
+    if (atual) {
+      this.confirmConfig = {
+        title: 'Trocar cronograma ativo',
+        message: `O cronograma <strong>${atual.nome}</strong> está ativo no momento.<br><br>Ao ativar este novo, o anterior será desabilitado no Tracker e você perderá temporariamente a visão do progresso antigo.`,
+        confirmLabel: 'Sim, ativar',
+        confirmStyle: 'primary',
+        onConfirm: doAtivacao
+      };
+      this.cdr.markForCheck();
+    } else {
+      doAtivacao();
+    }
   }
 
   gerarPdf(cronograma: CronogramaListItem): void {
     if (this.isGeneratingPdf) return;
     this.isGeneratingPdf = true;
-    
+
     this.cronogramaService.exportarPdf(cronograma.id).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -105,10 +138,12 @@ export class ListarCronogramaComponent implements OnInit {
         link.click();
         window.URL.revokeObjectURL(url);
         this.isGeneratingPdf = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isGeneratingPdf = false;
-        alert('Erro ao gerar o PDF. Verifique se o cronograma já foi renderizado pelas tarefas.');
+        this.showToast('error', 'Erro ao gerar PDF', 'Verifique se o cronograma já foi renderizado pelas tarefas.');
+        this.cdr.markForCheck();
       }
     });
   }
@@ -117,7 +152,30 @@ export class ListarCronogramaComponent implements OnInit {
     this.router.navigate(['/simulados/criar']);
   }
 
-  // Helpers de formatação
+  dismissConfirm(): void {
+    this.confirmConfig = null;
+    this.cdr.markForCheck();
+  }
+
+  acceptConfirm(): void {
+    if (!this.confirmConfig) return;
+    const fn = this.confirmConfig.onConfirm;
+    this.confirmConfig = null;
+    fn();
+  }
+
+  showToast(type: ToastMessage['type'], title: string, detail: string): void {
+    const id = ++this.toastCounter;
+    this.toasts = [...this.toasts, { id, type, title, detail }];
+    this.cdr.markForCheck();
+    setTimeout(() => this.removeToast(id), 4000);
+  }
+
+  removeToast(id: number): void {
+    this.toasts = this.toasts.filter(t => t.id !== id);
+    this.cdr.markForCheck();
+  }
+
   formatarData(dataStr: string): string {
     if (!dataStr) return '—';
     const [ano, mes, dia] = dataStr.split('-');

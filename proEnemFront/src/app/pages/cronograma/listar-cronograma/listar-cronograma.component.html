@@ -42,16 +42,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let c of cronogramas">
-            <!-- ID -->
             <td>{{ c.id }}</td>
-
-            <!-- Nome -->
             <td>{{ c.nome }}</td>
-
-            <!-- Dias -->
             <td>{{ formatarDias(c.dias_semana) }}</td>
-
-            <!-- Disciplinas -->
             <td>
               <div class="badge-list">
                 <span *ngFor="let d of c.disciplinas_selecionadas.slice(0, 3)" class="badge">
@@ -63,41 +56,58 @@
               </div>
               <div class="carga">{{ formatarHoras(c.minutos_estudo_por_dia) }}</div>
             </td>
-
-            <!-- Criado em -->
             <td>{{ c.created_at | date:'dd/MM/yyyy' }}</td>
-
-            <!-- Ativo -->
             <td>
               <label class="switch">
                 <input type="checkbox" [checked]="c.ativo" (click)="toggleAtivo($event, c)" [disabled]="c.ativo">
                 <span class="slider round"></span>
               </label>
             </td>
-
-            <!-- Ações -->
             <td>
               <div class="actions">
-                <button class="btn-icon view"
-                        title="Visualizar cronograma"
-                        (click)="verCronograma(c.id)">
-                  👁
-                </button>
-                <button class="btn-icon pdf"
-                        title="Gerar PDF"
-                        (click)="gerarPdf(c)">
-                  📄
-                </button>
-                <button class="btn-icon del"
-                        title="Excluir cronograma"
-                        (click)="deletarCronograma(c)">
-                  🗑
-                </button>
+                <button class="btn-icon view" title="Visualizar cronograma" (click)="verCronograma(c.id)">👁</button>
+                <button class="btn-icon pdf" title="Gerar PDF" (click)="gerarPdf(c)">📄</button>
+                <button class="btn-icon del" title="Excluir cronograma" (click)="deletarCronograma(c)">🗑</button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal de Confirmação ─────────────────────────────────────── -->
+<div class="modal-overlay" *ngIf="confirmConfig" (click)="dismissConfirm()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon" [class.danger]="confirmConfig.confirmStyle === 'danger'">
+      <span>{{ confirmConfig.confirmStyle === 'danger' ? '🗑' : '🔄' }}</span>
+    </div>
+    <h3 class="modal-title">{{ confirmConfig.title }}</h3>
+    <p class="modal-message" [innerHTML]="confirmConfig.message"></p>
+    <div class="modal-actions">
+      <button class="btn-modal cancel" (click)="dismissConfirm()">Cancelar</button>
+      <button class="btn-modal confirm"
+              [class.danger]="confirmConfig.confirmStyle === 'danger'"
+              (click)="acceptConfirm()">
+        {{ confirmConfig.confirmLabel }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toasts ───────────────────────────────────────────────────── -->
+<div class="toast-stack">
+  <div class="toast-item"
+       *ngFor="let t of toasts"
+       [class]="'toast-item toast-' + t.type"
+       (click)="removeToast(t.id)">
+    <span class="toast-icon">
+      {{ t.type === 'success' ? '✓' : t.type === 'error' ? '✕' : t.type === 'warning' ? '⚠' : 'ℹ' }}
+    </span>
+    <div class="toast-body">
+      <strong>{{ t.title }}</strong>
+      <span>{{ t.detail }}</span>
     </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject, NgZone, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MascotService } from './mascot.service';
 
@@ -16,6 +16,7 @@ interface AnimationStep {
   imports: [CommonModule],
   templateUrl: './mascot.component.html',
   styleUrl: './mascot.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MascotComponent implements OnInit, OnDestroy {
   readonly FRAME_WIDTH  = 64;
@@ -34,8 +35,8 @@ export class MascotComponent implements OnInit, OnDestroy {
       durationSeconds: 10, // 1 minuto sentado
       label: 'sit',
     },
-      {
-      rows: [19],      // percorre linha 18 completa, depois linha 19, em loop
+    {
+      rows: [19],
       framesPerRow: 3,
       fps: 2,              // 2 frames por segundo
       durationSeconds: 300,// 5 minutos
@@ -46,7 +47,7 @@ export class MascotComponent implements OnInit, OnDestroy {
       framesPerRow: 5,
       fps: 2,              // 2 frames por segundo
       durationSeconds: 300,// 5 minutos
-      label: 'play',
+      label: 'play2',
     },
     {
       rows: [20],
@@ -58,6 +59,7 @@ export class MascotComponent implements OnInit, OnDestroy {
   ];
 
   readonly mascotService = inject(MascotService);
+  private readonly ngZone = inject(NgZone);
 
   // ─── Estado interno ───────────────────────────────────────────────────────
   currentStepIndex = signal(0);
@@ -107,6 +109,8 @@ export class MascotComponent implements OnInit, OnDestroy {
   }
 
   // ─── Player de sequência ──────────────────────────────────────────────────
+  // Os timers rodam fora da zone do Angular para não disparar change detection
+  // a cada tick — evita NG0100 em outros componentes da página.
   private startStep(index: number): void {
     clearInterval(this.frameTimer);
     clearTimeout(this.stepTimer);
@@ -117,21 +121,23 @@ export class MascotComponent implements OnInit, OnDestroy {
 
     const step = this.sequence[index];
 
-    this.frameTimer = setInterval(() => {
-      const next = this.currentFrame() + 1;
-      if (next < this.framesInRow) {
-        this.currentFrame.set(next);
-      } else {
-        // terminou os frames desta linha → avança para a próxima linha do passo
-        const nextRow = (this.currentRowIndex() + 1) % step.rows.length;
-        this.currentRowIndex.set(nextRow);
-        this.currentFrame.set(0);
-      }
-    }, 1000 / step.fps);
+    // Signals são zone-agnostic no Angular 17+ — atualizam o template sem
+    // re-entrar na zone, evitando disparar change detection global.
+    this.ngZone.runOutsideAngular(() => {
+      this.frameTimer = setInterval(() => {
+        const next = this.currentFrame() + 1;
+        if (next < this.framesInRow) {
+          this.currentFrame.set(next);
+        } else {
+          const nextRow = (this.currentRowIndex() + 1) % step.rows.length;
+          this.currentRowIndex.set(nextRow);
+          this.currentFrame.set(0);
+        }
+      }, 1000 / step.fps);
 
-    // avança para o próximo passo após durationSeconds
-    this.stepTimer = setTimeout(() => {
-      this.startStep((index + 1) % this.sequence.length);
-    }, step.durationSeconds * 1000);
+      this.stepTimer = setTimeout(() => {
+        this.startStep((index + 1) % this.sequence.length);
+      }, step.durationSeconds * 1000);
+    });
   }
 }
