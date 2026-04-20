@@ -15,6 +15,9 @@ import { routes } from '../../../shared/routes/routes';
 import { DateRangePickerComponent } from '../../../features/common/date-range-picker/date-range-picker.component';
 import { CollapseHeaderComponent } from '../../../features/common/collapse-header/collapse-header.component';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { DashboardService, DashboardStats } from '../../../core/services/dashboard.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 export interface ChartOptions {
@@ -30,7 +33,7 @@ export interface ChartOptions {
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
-    imports: [NgApexchartsModule,DateRangePickerComponent,RouterLink,CollapseHeaderComponent]
+    imports: [NgApexchartsModule,DateRangePickerComponent,RouterLink,CollapseHeaderComponent,CommonModule]
 })
 export class DashboardComponent implements OnInit{
   public routes=routes;
@@ -41,13 +44,26 @@ export class DashboardComponent implements OnInit{
   bsValue = new Date();
   bsRangeValue: Date[];
   maxDate = new Date();
-  constructor(private renderer : Renderer2) {
+  
+  public stats?: DashboardStats;
+  public isLoadingStats = true;
+
+  constructor(
+      private renderer: Renderer2, 
+      private dashboardService: DashboardService,
+      public authService: AuthService
+  ) {
     this.maxDate.setDate(this.maxDate.getDate() + 7);
     this.bsRangeValue = [this.bsValue, this.maxDate];
 
   }
   ngOnInit(): void {
+    this.renderer.addClass(document.body, 'date-picker');
+    this.carregarMetadados();
+    this.initCharts();
+  }
 
+  initCharts(): void {
     this.revenue_income = {
     chart: {
       height: 260,
@@ -69,16 +85,16 @@ export class DashboardComponent implements OnInit{
     },
     series: [
       {
-        name: 'Income',
-        data: [40, 30, 45, 80, 85, 90, 80, 80, 80, 85, 20, 80]
+        name: 'Tarefas Concluídas',
+        data: this.stats?.monthly_chart || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       },
       {
-        name: 'Expenses (bg)',
+        name: 'Meta (bg)',
         data: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
       }
     ],
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct','Nov', 'Dec'],
+      categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out','Nov', 'Dez'],
       labels: {
         style: {
           colors: '#0E9384',
@@ -96,7 +112,7 @@ export class DashboardComponent implements OnInit{
           fontSize: '13px',
         },
         formatter: function (value:any) {
-          return value + "K";
+          return value;
         }
       }
     },
@@ -116,7 +132,7 @@ export class DashboardComponent implements OnInit{
     tooltip: {
       y: {
         formatter: function (val:any) {
-          return val / 10 + " k";
+          return val + " tarefas";
         }
       }
     },
@@ -163,11 +179,11 @@ export class DashboardComponent implements OnInit{
       show: false
     },
     series: [{
-      name: 'Company',
-      data: [40, 60, 20, 80, 60, 60, 60]
+      name: 'Tarefas Concluídas',
+      data: this.stats?.weekly_chart || [0, 0, 0, 0, 0, 0, 0]
     }],
     xaxis: {
-      categories: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      categories: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
       labels: {
         style: {
           colors: '#E04F16',
@@ -214,8 +230,8 @@ export class DashboardComponent implements OnInit{
       }
     },
     colors: ['#E41F07', '#FFA201', '#2F80ED'],
-    series: [20, 20, 60],
-    labels: ['Enterprise', 'Premium', 'Basic'],
+    series: this.stats?.subject_chart?.series?.length ? this.stats.subject_chart.series : [1, 1, 1],
+    labels: this.stats?.subject_chart?.labels?.length ? this.stats.subject_chart.labels : ['Matemática', 'Português', 'História'],
     plotOptions: {
       pie: {
         donut: {
@@ -249,7 +265,28 @@ export class DashboardComponent implements OnInit{
       }
     }]
   }
-  this.renderer.addClass(document.body,'date-picker')
+  }
+
+  getProgressPercent(): number {
+    if (!this.stats || !this.stats.meta_semana || this.stats.meta_semana === 0) return 0;
+    const pct = Math.round((this.stats.estudados_semana / this.stats.meta_semana) * 100);
+    return Math.min(pct, 100);
+  }
+
+  carregarMetadados() {
+    this.isLoadingStats = true;
+    this.dashboardService.getStats().subscribe({
+      next: (data) => {
+        this.stats = data;
+        this.isLoadingStats = false;
+        // Reinicializa as configs dos gráficos com os dados reais injetados
+        this.initCharts();
+      },
+      error: (err) => {
+        console.error('Erro ao buscar stats do dashboard', err);
+        this.isLoadingStats = false;
+      }
+    });
   }
 
 ngOnDestroy():void{

@@ -19,6 +19,8 @@ export interface CronogramaResponse {
   tirar_ferias: boolean;
   disciplinas_selecionadas: string[];
   minutos_estudo_por_dia: number;
+  ativo: boolean;
+  cronograma_json?: any; // Para quando vier do ativo() ou show()
   created_at: string;
   updated_at: string;
 }
@@ -31,5 +33,6 @@ export interface CronogramaListItem {
   dias_semana: string[];
   disciplinas_selecionadas: string[];
   minutos_estudo_por_dia: number;
+  ativo: boolean;
   created_at: string;
 }

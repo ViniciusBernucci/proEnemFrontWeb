@@ -20,7 +20,7 @@ export class ListarCronogramaComponent implements OnInit {
   errorMessage = '';
 
   // Cronograma selecionado para impressão (PDF)
-  cronogramaSelecionadoPdf: CronogramaListItem | null = null;
+  isGeneratingPdf = false;
 
   ngOnInit(): void {
     this.carregarCronogramas();
@@ -66,13 +66,51 @@ export class ListarCronogramaComponent implements OnInit {
       });
   }
 
+  toggleAtivo(event: Event, cronograma: CronogramaListItem): void {
+    // Evita que o checkbox se altere visualmente antes da confirmação
+    event.preventDefault();
+
+    if (cronograma.ativo) return; // Ja esta ativo, nao faz nada
+
+    const atual = this.cronogramas.find(c => c.ativo);
+    if (atual) {
+      const confirmar = confirm(`O cronograma "${atual.nome}" está atualmente ativo.\n\nAo ativar este novo, o método anterior será desabilitado no seu Tracker de Estudos. Você perderá temporariamente a visão do progresso antigo.\n\nDeseja continuar?`);
+      if (!confirmar) return;
+    }
+
+    this.cronogramaService.ativarCronograma(cronograma.id).subscribe({
+      next: () => {
+        // Atualiza a lista localmente (Angular cuidará do render agora verdadeiro)
+        this.cronogramas.forEach(c => {
+          c.ativo = (c.id === cronograma.id);
+        });
+        alert(`Sucesso! O cronograma "${cronograma.nome}" agora é o seu plano de estudos principal no Tracker!`);
+      },
+      error: () => {
+        alert('Erro ao ativar o cronograma. Tente novamente.');
+      }
+    });
+  }
+
   gerarPdf(cronograma: CronogramaListItem): void {
-    this.cronogramaSelecionadoPdf = cronograma;
-    // Aguarda o DOM atualizar antes de imprimir
-    setTimeout(() => {
-      window.print();
-      this.cronogramaSelecionadoPdf = null;
-    }, 100);
+    if (this.isGeneratingPdf) return;
+    this.isGeneratingPdf = true;
+    
+    this.cronogramaService.exportarPdf(cronograma.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `cronograma_${cronograma.nome.replace(/\s+/g, '_').toLowerCase()}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.isGeneratingPdf = false;
+      },
+      error: () => {
+        this.isGeneratingPdf = false;
+        alert('Erro ao gerar o PDF. Verifique se o cronograma já foi renderizado pelas tarefas.');
+      }
+    });
   }
 
   novoCronograma(): void {

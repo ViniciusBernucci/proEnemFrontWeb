@@ -23,7 +23,7 @@ export class TrackerComponent implements OnInit, OnDestroy {
   dailyTasks: StudyTask[] = [];
   weeklyTasks: { date: string, tasks: StudyTask[] }[] = [];
   
-  today = new Date().toISOString().split('T')[0];
+  today = this.formatToYYYYMMDD(new Date());
   weekDates: string[] = [];
   selectedDate: string | null = null;
 
@@ -34,24 +34,36 @@ export class TrackerComponent implements OnInit, OnDestroy {
 
   calculateWeekDates() {
     const d = new Date();
+    // Set to local midnight to avoid shifting
+    d.setHours(0, 0, 0, 0);
+
     const day = d.getDay();
     const diff = d.getDate() - day + (day == 0 ? -6 : 1); // Monday is first day
     const monday = new Date(d.setDate(diff));
     
     this.weekDates = [];
     for (let i = 0; i < 7; i++) {
-        const next = new Date(monday);
+        const next = new Date(monday.valueOf()); // Copia o obj
         next.setDate(monday.getDate() + i);
-        this.weekDates.push(next.toISOString().split('T')[0]);
+        this.weekDates.push(this.formatToYYYYMMDD(next));
     }
+  }
+
+  private formatToYYYYMMDD(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   loadData() {
     this.isLoading = true;
     this.error = null;
 
-    const startDate = this.viewMode === 'daily' ? this.today : this.weekDates[0];
-    const endDate = this.viewMode === 'daily' ? this.today : this.weekDates[6];
+    // Otimização: Sempre carrega a *SEMANA INTEIRA* em uma única requisição leve.
+    // Isso evita requests HTTP adicionais quando o usuário clica para alternar a View.
+    const startDate = this.weekDates[0];
+    const endDate = this.weekDates[6];
 
     this.trackerService.getTasks(startDate, endDate)
       .pipe(
@@ -60,17 +72,21 @@ export class TrackerComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (tasks: StudyTask[]) => {
-          if (this.viewMode === 'daily') {
-             this.dailyTasks = tasks;
-          } else {
-             this.weeklyTasks = this.weekDates.map(date => ({
-                date,
-                tasks: tasks.filter((t: StudyTask) => t.date === date)
-             }));
-          }
+           // Mapeamento Semanal
+           this.weeklyTasks = this.weekDates.map(date => ({
+              date,
+              tasks: tasks.filter((t: StudyTask) => t.date === date)
+           }));
+           
+           // Mapeamento Diário
+           this.dailyTasks = tasks.filter((t: StudyTask) => t.date === this.today);
         },
         error: (err: any) => {
-           this.error = err?.error?.message || 'Erro ao carregar os dados do tracker.';
+           if (err.status === 404) {
+             this.error = 'Você ainda não ativou nenhum cronograma. Vá na listagem de Cronogramas e ative um para acompanhar seus estudos.';
+           } else {
+             this.error = err?.error?.message || 'Erro ao carregar os dados do tracker.';
+           }
         }
       });
   }
@@ -78,10 +94,13 @@ export class TrackerComponent implements OnInit, OnDestroy {
   setViewMode(mode: 'daily' | 'weekly') {
     if (this.viewMode !== mode) {
       this.viewMode = mode;
+      
+      // Como os dados da semana inteira já estão em memória (dailyTasks e weeklyTasks já formatados),
+      // não disparamos this.loadData()! A interface reage instantaneamente (Zero delay).
+      
       if (mode === 'weekly' && !this.selectedDate) {
         this.selectedDate = this.weekDates.includes(this.today) ? this.today : this.weekDates[0];
       }
-      this.loadData();
     }
   }
 

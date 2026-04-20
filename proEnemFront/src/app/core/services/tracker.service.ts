@@ -1,16 +1,17 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, delay, of } from 'rxjs';
-/* import { environment } from '../../../environments/environment'; */
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { API_CONFIG } from '../config/api.config';
 
 export interface StudyTask {
-  id: number;
+  id: string;
   subject: string;
   topic: string;
   duration: number; // minutes
   completed: boolean;
   date: string; // YYYY-MM-DD
-  type: 'video' | 'reading' | 'exercise';
+  type: 'video' | 'reading' | 'exercise'; 
 }
 
 @Injectable({
@@ -18,35 +19,19 @@ export interface StudyTask {
 })
 export class TrackerService {
   private http = inject(HttpClient);
-  // private apiUrl = `${environment.apiUrl}/tracker`;
-
-  // Mock data for initial presentation
-  private mockTasks: StudyTask[] = [
-    { id: 1, subject: 'Matemática', topic: 'Funções de 1º Grau', duration: 45, completed: true, date: new Date().toISOString().split('T')[0], type: 'video' },
-    { id: 2, subject: 'Física', topic: 'Cinemática', duration: 60, completed: false, date: new Date().toISOString().split('T')[0], type: 'reading' },
-    { id: 3, subject: 'Redação', topic: 'Estrutura Dissertativa', duration: 90, completed: false, date: new Date().toISOString().split('T')[0], type: 'exercise' },
-    { id: 4, subject: 'Química', topic: 'Estequiometria', duration: 30, completed: true, date: this.getOffsetDate(-1), type: 'exercise' },
-    { id: 5, subject: 'Biologia', topic: 'Citologia', duration: 40, completed: false, date: this.getOffsetDate(1), type: 'video' },
-    { id: 6, subject: 'História', topic: 'Revolução Francesa', duration: 45, completed: false, date: this.getOffsetDate(2), type: 'reading' }
-  ];
-
-  private getOffsetDate(days: number): string {
-    const d = new Date();
-    d.setDate(d.getDate() + days);
-    return d.toISOString().split('T')[0];
-  }
+  private apiUrl = API_CONFIG.baseUrl;
 
   getTasks(startDate: string, endDate: string): Observable<StudyTask[]> {
-    const filtered = this.mockTasks.filter(t => t.date >= startDate && t.date <= endDate);
-    return of(filtered); // .pipe(delay(600));
+    const params = new HttpParams()
+      .set('start_date', startDate)
+      .set('end_date', endDate);
+
+    return this.http.get<{ data: StudyTask[] }>(`${this.apiUrl}/tracker/tasks`, { params })
+      .pipe(map(response => response.data ?? []));
   }
 
-  toggleTaskCompletion(id: number, completed: boolean): Observable<StudyTask> {
-    const task = this.mockTasks.find(t => t.id === id);
-    if (task) {
-      task.completed = completed;
-      return of(task); // .pipe(delay(300));
-    }
-    throw new Error('Task not found');
+  toggleTaskCompletion(id: string, completed: boolean): Observable<StudyTask> {
+    return this.http.patch<{ data: StudyTask }>(`${this.apiUrl}/tracker/tasks/${id}/toggle`, {})
+      .pipe(map(response => response.data));
   }
 }

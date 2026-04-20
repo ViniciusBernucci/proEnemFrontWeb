@@ -33,4 +33,17 @@ export class CronogramaService {
   deletarCronograma(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/cronogramas/${id}`);
   }
+
+  ativarCronograma(id: number): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/cronogramas/${id}/ativar`, {});
+  }
+
+  obterCronogramaAtivo(): Observable<CronogramaResponse> {
+    return this.http.get<{ data: CronogramaResponse }>(`${this.apiUrl}/cronogramas/ativo`)
+      .pipe(map(response => response.data));
+  }
+
+  exportarPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/cronogramas/${id}/pdf`, { responseType: 'blob' });
+  }
 }

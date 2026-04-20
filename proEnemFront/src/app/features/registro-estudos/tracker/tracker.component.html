@@ -27,12 +27,11 @@
     {{ error }}
   </div>
 
-  <!-- Loading State 
+  <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <div class="spinner"></div>
-    <p>Carregando as metas...</p>
+    <p>Carregando cronograma ativo...</p>
   </div>
-  -->
 
   <!-- Content -->
   <div *ngIf="!isLoading && !error" class="tracker-content">

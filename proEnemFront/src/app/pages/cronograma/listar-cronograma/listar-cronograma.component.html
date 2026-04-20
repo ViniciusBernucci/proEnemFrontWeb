@@ -36,6 +36,7 @@
             <th>Dias da semana</th>
             <th>Disciplinas</th>
             <th>Criado em</th>
+            <th>Ativo</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -66,6 +67,14 @@
             <!-- Criado em -->
             <td>{{ c.created_at | date:'dd/MM/yyyy' }}</td>
 
+            <!-- Ativo -->
+            <td>
+              <label class="switch">
+                <input type="checkbox" [checked]="c.ativo" (click)="toggleAtivo($event, c)" [disabled]="c.ativo">
+                <span class="slider round"></span>
+              </label>
+            </td>
+
             <!-- Ações -->
             <td>
               <div class="actions">
@@ -91,31 +100,4 @@
       </table>
     </div>
   </div>
-</div>
-
-<!-- Área de impressão — visível apenas no print -->
-<div class="print-area" *ngIf="cronogramaSelecionadoPdf as c">
-  <h2>Cronograma #{{ c.id }}</h2>
-  <p>Gerado em: {{ c.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
-
-  <table>
-    <tbody>
-      <tr>
-        <th>Período</th>
-        <td>{{ formatarData(c.data_inicio) }} até {{ formatarData(c.data_fim) }}</td>
-      </tr>
-      <tr>
-        <th>Dias da semana</th>
-        <td>{{ formatarDias(c.dias_semana) }}</td>
-      </tr>
-      <tr>
-        <th>Carga horária</th>
-        <td>{{ formatarHoras(c.minutos_estudo_por_dia) }}</td>
-      </tr>
-      <tr>
-        <th>Disciplinas</th>
-        <td>{{ c.disciplinas_selecionadas.join(', ') }}</td>
-      </tr>
-    </tbody>
-  </table>
 </div>

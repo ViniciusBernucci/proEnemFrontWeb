@@ -1,118 +1,216 @@
-  <!-- Start Content -->
-            <div class="content pb-0">
+<div class="content pb-0">
 
-                <!-- Start Welcome Wrap -->
-				<div class="welcome-wrap mb-4">
-					<div class=" d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
-						<div class="">
-							<h2 class="mb-1 text-white fs-24">Bem Vindo de volta, Vinícius</h2>
-							<p class="text-light fs-14 mb-0">Você possui 14 tópicos de estudo esta semana !!!</p>
-						</div>
-						<div class="d-flex align-items-center flex-wrap gap-2">
-							<a [routerLink]="routes.superAdminCompanies" class="btn btn-danger btn-sm">Companies</a>
-							<a [routerLink]="routes.superAdminPackages" class="btn btn-light btn-sm">All Packages</a>
-						</div>
-					</div>
-				</div>	
-				<!-- Endc Welcome Wrap -->
+  <!-- ===== Welcome Banner ===== -->
+  <div class="welcome-banner mb-4">
+    <div class="welcome-inner">
 
-                <!-- start row -->
-                <div class="row row-gap-3 mb-4">
-					<!-- Total Companies -->
-					<div class="col-xl-3 col-sm-6 d-flex">
-						<div class="card flex-fill mb-0 position-relative overflow-hidden">
-							<div class="card-body position-relative z-1">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div>
-                                            <p class="fs-14 mb-1">Resumo de estudos diário</p>
-                                            <h2 class="mb-1 fs-16">5 tópicos para hoje</h2>
-                                            <p class="text-success mb-0 fs-13"> <i class="ti ti-arrow-bar-up me-1"></i>5.62%<span class="text-body ms-1">from last month</span></p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span class="avatar avatar-md rounded-circle bg-soft-primary border border-primary">
-                                            <i class="ti ti-building fs-16 text-primary"></i>
-                                        </span>
-                                    </div>
-                                </div>
-							</div>
-                            <img src="assets/img/icons/elemnt-01.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
-						</div>
-					</div>
-					<!-- /Total Companies -->
+      <div class="welcome-left">
+        <span class="welcome-badge">
+          <i class="ti ti-sun"></i>
+          Painel de Estudos
+        </span>
+        <h2 class="welcome-title">
+          Olá, {{ authService.currentUser()?.name?.split(' ')?.[0] || 'Aluno' }}!
+        </h2>
+        <p class="welcome-subtitle">
+          <ng-container *ngIf="!isLoadingStats && stats">
+            Você tem <strong>{{ stats.meta_hoje }} tópicos</strong> para estudar hoje. Bora focar!
+          </ng-container>
+          <ng-container *ngIf="isLoadingStats">
+            Carregando seu plano de estudos...
+          </ng-container>
+        </p>
+        <div class="welcome-actions">
+          <a [routerLink]="['/registro-estudos/tracker']" class="btn-action btn-action-primary">
+            <i class="ti ti-chart-bar"></i>
+            Abrir Tracker
+          </a>
+          <a [routerLink]="['/simulados/listar']" class="btn-action btn-action-outline">
+            <i class="ti ti-calendar-event"></i>
+            Ver Cronograma
+          </a>
+        </div>
+      </div>
 
-                    <!-- Total Companies -->
-					<div class="col-xl-3 col-sm-6 d-flex">
-						<div class="card flex-fill mb-0 position-relative overflow-hidden">
-							<div class="card-body position-relative z-1">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div>
-                                            <p class="fs-14 mb-1">Sua atividade esta semana</p>
-                                            <h2 class="mb-1 fs-16">3 tópicos estudados</h2>
-                                            <p class="text-danger mb-0 fs-13"> <i class="ti ti-arrow-bar-down me-1"></i>12%<span class="text-body ms-1">from last month</span></p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span class="avatar avatar-md rounded-circle bg-soft-success border border-success">
-                                            <i class="ti ti-carousel-vertical fs-16 text-success"></i>
-                                        </span>
-                                    </div>
-                                </div>
-							</div>
-                            <img src="assets/img/icons/elemnt-02.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
-						</div>
-					</div>
-					<!-- /Total Companies -->
+      <div class="welcome-right">
+        <div class="enem-countdown">
+          <div class="enem-ring">
+            <span class="enem-number">{{ stats ? stats.dias_para_enem : '—' }}</span>
+            <span class="enem-label">dias para o<br><strong>ENEM</strong></span>
+          </div>
+          <p class="enem-date">Novembro 2026</p>
+        </div>
+      </div>
 
-                    <!-- Total Companies -->
-					<div class="col-xl-3 col-sm-6 d-flex">
-						<div class="card flex-fill mb-0 position-relative overflow-hidden">
-							<div class="card-body position-relative z-1">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div>
-                                            <p class="fs-14 mb-1">Acertos último simulado</p>
-                                            <h2 class="mb-1 fs-16">54</h2>
-                                            <p class="text-success mb-0 fs-13"> <i class="ti ti-arrow-bar-up me-1"></i>6%<span class="text-body ms-1">from last month</span></p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span class="avatar avatar-md rounded-circle bg-soft-warning border border-warning">
-                                            <i class="ti ti-chalkboard-off fs-16 text-warning"></i>
-                                        </span>
-                                    </div>
-                                </div>
-							</div>
-                            <img src="assets/img/icons/elemnt-03.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
-						</div>
-					</div>
-					<!-- /Total Companies -->
+    </div>
+  </div>
+  <!-- ===== /Welcome Banner ===== -->
 
-                    <!-- Total Companies -->
-					<div class="col-xl-3 col-sm-6 d-flex">
-						<div class="card flex-fill mb-0 position-relative overflow-hidden">
-							<div class="card-body position-relative z-1">
-                                <div class="d-flex align-items-start justify-content-between">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div>
-                                            <p class="fs-14 mb-1">Faltam</p>
-                                            <h2 class="mb-1 fs-16">365 dias para o ENEM</h2>
-                                            <p class="text-danger mb-0 fs-13"> <i class="ti ti-arrow-bar-down me-1"></i>16%<span class="text-body ms-1">from last month</span></p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <span class="avatar avatar-md rounded-circle bg-soft-danger border border-danger mb-3">
-                                            <i class="ti ti-businessplan fs-16 text-primary"></i>
-                                        </span>
-                                    </div>
-                                </div>
-							</div>
-                            <img src="assets/img/icons/elemnt-04.svg" alt="elemnt-04" class="img-fluid position-absolute top-0 Start-0">
-						</div>
-					</div>
-					<!-- /Total Companies -->
+  <!-- ===== Stats Cards ===== -->
+  <div class="row row-gap-3 mb-4">
 
-            </div>
-            <!-- End Content -->      
+    <!-- Meta de hoje -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+      <div class="stat-card stat-card--blue flex-fill">
+        <div class="stat-card__icon">
+          <i class="ti ti-book"></i>
+        </div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Meta de hoje</span>
+          <div class="stat-card__value">
+            {{ stats ? stats.meta_hoje : '—' }}
+            <span class="stat-card__unit">tópicos</span>
+          </div>
+          <span class="stat-card__hint">No cronograma ativo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progresso semanal -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+      <div class="stat-card stat-card--green flex-fill">
+        <div class="stat-card__icon">
+          <i class="ti ti-trending-up"></i>
+        </div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Progresso semanal</span>
+          <div class="stat-card__value">
+            {{ stats ? stats.estudados_semana : '—' }}
+            <span class="stat-card__unit">/ {{ stats ? stats.meta_semana : '—' }}</span>
+          </div>
+          <div class="stat-card__progress mt-2">
+            <div class="stat-card__progress-bar" [style.width]="getProgressPercent() + '%'"></div>
+          </div>
+          <span class="stat-card__hint">{{ getProgressPercent() }}% concluído</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Último simulado -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+      <div class="stat-card stat-card--orange flex-fill">
+        <div class="stat-card__icon">
+          <i class="ti ti-award"></i>
+        </div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Último simulado</span>
+          <div class="stat-card__value">
+            {{ stats ? stats.ultimo_simulado : '—' }}
+          </div>
+          <span class="stat-card__hint">Pontuação obtida</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dias para o ENEM -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+      <div class="stat-card stat-card--red flex-fill">
+        <div class="stat-card__icon">
+          <i class="ti ti-clock"></i>
+        </div>
+        <div class="stat-card__body">
+          <span class="stat-card__label">Dias para o ENEM</span>
+          <div class="stat-card__value">
+            {{ stats ? stats.dias_para_enem : '—' }}
+            <span class="stat-card__unit">dias</span>
+          </div>
+          <span class="stat-card__hint stat-card__hint--red">Data estimada: Novembro</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ===== /Stats Cards ===== -->
+
+  <!-- ===== Gráficos ===== -->
+  <div class="row row-gap-3">
+
+    <!-- Evolução Mensal -->
+    <div class="col-xl-8 col-lg-7 d-flex">
+      <div class="card flex-fill">
+        <div class="card-header d-flex align-items-start justify-content-between">
+          <div>
+            <h5 class="card-title mb-0">Evolução Mensal</h5>
+            <p class="text-muted fs-13 mb-0">Tópicos concluídos por mês no ano</p>
+          </div>
+          <span class="chart-badge chart-badge--teal">2026</span>
+        </div>
+        <div class="card-body">
+          <div id="monthly-chart" class="chart-set">
+            <apx-chart
+              [series]="revenue_income.series"
+              [chart]="revenue_income.chart"
+              [xaxis]="revenue_income.xaxis"
+              [yaxis]="revenue_income.yaxis"
+              [grid]="revenue_income.grid"
+              [dataLabels]="revenue_income.dataLabels"
+              [plotOptions]="revenue_income.plotOptions"
+              [tooltip]="revenue_income.tooltip"
+              [responsive]="revenue_income.responsive"
+              [colors]="revenue_income.colors"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequência Semanal -->
+    <div class="col-xl-4 col-lg-5 d-flex">
+      <div class="card flex-fill">
+        <div class="card-header d-flex align-items-start justify-content-between">
+          <div>
+            <h5 class="card-title mb-0">Esta Semana</h5>
+            <p class="text-muted fs-13 mb-0">Frequência diária de estudos</p>
+          </div>
+          <span class="chart-badge chart-badge--orange">7 dias</span>
+        </div>
+        <div class="card-body">
+          <div id="weekly-chart" class="chart-set">
+            <apx-chart
+              [series]="companyChart.series"
+              [chart]="companyChart.chart"
+              [xaxis]="companyChart.xaxis"
+              [yaxis]="companyChart.yaxis"
+              [grid]="companyChart.grid"
+              [dataLabels]="companyChart.dataLabels"
+              [plotOptions]="companyChart.plotOptions"
+              [responsive]="companyChart.responsive"
+              [colors]="companyChart.colors"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribuição por Disciplina -->
+    <div class="col-xl-4 col-md-6 d-flex">
+      <div class="card flex-fill">
+        <div class="card-header d-flex align-items-start justify-content-between">
+          <div>
+            <h5 class="card-title mb-0">Distribuição de Matérias</h5>
+            <p class="text-muted fs-13 mb-0">Carga horária por área de conhecimento</p>
+          </div>
+          <span class="chart-badge chart-badge--blue">Cronograma</span>
+        </div>
+        <div class="card-body">
+          <div id="plan-chart" class="chart-set">
+            <apx-chart
+              [series]="planOverview.series"
+              [chart]="planOverview.chart"
+              [labels]="planOverview.labels"
+              [colors]="planOverview.colors"
+              [plotOptions]="planOverview.plotOptions"
+              [stroke]="planOverview.stroke"
+              [dataLabels]="planOverview.dataLabels"
+              [legend]="planOverview.legend"
+              [responsive]="planOverview.responsive"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ===== /Gráficos ===== -->
+
+</div>
