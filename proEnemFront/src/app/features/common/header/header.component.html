@@ -8,8 +8,19 @@
 
                         <!-- Dark/Light Mode Toggle -->
                         <div class="header-item">
-                            <button class="topbar-link btn" type="button" (click)="changeTheme()" [title]="themeMode === 'dark' ? 'Mudar para Light Mode' : 'Mudar para Dark Mode'" aria-label="Alternar tema">
+                            <button class="topbar-link btn" type="button" (click)="changeTheme()"
+                                [attr.data-tooltip]="themeMode === 'dark' ? 'Mudar para Light Mode' : 'Mudar para Dark Mode'"
+                                aria-label="Alternar tema">
                                 <i class="fs-18" [class]="themeMode === 'dark' ? 'ti ti-sun' : 'ti ti-moon'"></i>
+                            </button>
+                        </div>
+
+                        <!-- Mascote Toggle -->
+                        <div class="header-item">
+                            <button class="topbar-link btn" type="button" (click)="mascotService.toggle()"
+                                [attr.data-tooltip]="mascotService.visible() ? 'Ocultar mascote' : 'Exibir mascote'"
+                                aria-label="Alternar mascote">
+                                <i class="fs-18" [class]="mascotService.visible() ? 'ti ti-eye' : 'ti ti-eye-off'"></i>
                             </button>
                         </div>
 
@@ -17,7 +28,7 @@
                         <div class="header-item">
                             <div class="dropdown me-2">
                             
-                                <button class="topbar-link btn topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" data-bs-offset="0,24" type="button" aria-haspopup="false" aria-expanded="false">
+                                <button class="topbar-link btn topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" data-bs-offset="0,24" type="button" aria-haspopup="false" aria-expanded="false" data-tooltip="Notificações">
                                     <i class="ti ti-bell-check fs-16 animate-ring"></i>
                                     <span class="badge rounded-pill">10</span>
                                 </button>
@@ -146,7 +157,7 @@
                         
                         <!-- User Dropdown -->
                         <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
-                            <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
+                            <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false" data-tooltip="Meu perfil">
                                 <img src="assets/img/users/user-40.jpg" width="38" class="rounded-1 d-flex" alt="user-image">
                                 <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
                             </a>

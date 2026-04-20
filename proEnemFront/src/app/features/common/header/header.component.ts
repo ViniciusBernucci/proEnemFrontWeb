@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MascotService } from '../../../shared/mascot/mascot.service';
 import { routes } from '../../../shared/routes/routes';
 import { MainMenu, Menu } from '../../../shared/model/sidebar.model';
 import { DataService } from '../../../shared/data/data.service';
@@ -16,6 +17,7 @@ import { AuthService } from '../../../core/services/auth.service';
     imports: [RouterLink]
 })
 export class HeaderComponent {
+  readonly mascotService = inject(MascotService);
  
   base = '';
   page = '';

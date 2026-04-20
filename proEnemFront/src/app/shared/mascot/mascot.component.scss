@@ -1,0 +1,16 @@
+.mascot-wrapper {
+  position: fixed;
+  left: 4px;
+  bottom: -30px;
+  z-index: 1050;   // acima do conteúdo mas abaixo de modais
+  pointer-events: none; // não bloqueia cliques
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mascot-sprite {
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}

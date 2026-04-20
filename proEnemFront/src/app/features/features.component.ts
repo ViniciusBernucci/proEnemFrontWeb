@@ -13,6 +13,7 @@ import { HeaderComponent } from './common/header/header.component';
 import { MenuItem } from 'primeng/api';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { filter } from 'rxjs';
+import { MascotComponent } from '../shared/mascot/mascot.component';
 export interface RouterObject {
   id?: number;
   url: string;
@@ -20,7 +21,7 @@ export interface RouterObject {
 }
 @Component({
   selector: 'app-features',
-  imports: [RouterModule,CommonModule,LayoutComponent,SidebarComponent,HeaderComponent],
+  imports: [RouterModule,CommonModule,LayoutComponent,SidebarComponent,HeaderComponent,MascotComponent],
   templateUrl: './features.component.html',
   styleUrl: './features.component.scss'
 })

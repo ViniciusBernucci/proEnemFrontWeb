@@ -1,0 +1,45 @@
+// Balão de tooltip para botões do header
+[data-tooltip] {
+  position: relative;
+
+  &::before,
+  &::after {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateX(-50%) translateY(4px);
+    z-index: 9999;
+  }
+
+  // Texto do balão
+  &::after {
+    content: attr(data-tooltip);
+    background: #1e293b;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  // Setinha
+  &::before {
+    content: '';
+    border: 5px solid transparent;
+    border-top-color: #1e293b;
+    bottom: calc(100% + 0px);
+    transform: translateX(-50%) translateY(4px);
+  }
+
+  &:hover::before,
+  &:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

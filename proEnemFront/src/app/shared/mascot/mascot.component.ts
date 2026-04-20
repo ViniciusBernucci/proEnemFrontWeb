@@ -1,0 +1,130 @@
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MascotService } from './mascot.service';
+
+interface AnimationStep {
+  rows: number[];          // linhas do sprite a percorrer neste passo
+  framesPerRow: number | number[]; // frames por linha (número único ou array por linha)
+  fps: number;             // frames por segundo
+  durationSeconds: number; // quanto tempo ficar neste passo antes de avançar
+  label: string;
+}
+
+@Component({
+  selector: 'app-mascot',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './mascot.component.html',
+  styleUrl: './mascot.component.scss',
+})
+export class MascotComponent implements OnInit, OnDestroy {
+  readonly FRAME_WIDTH  = 64;
+  readonly FRAME_HEIGHT = 64;
+  readonly SCALE        = 2;
+  readonly SHEET_COLS   = 14;
+
+  // ─── Sequência de animações ───────────────────────────────────────────────
+  // Cada passo executa por durationSeconds e depois avança para o próximo.
+  // Ao terminar o último, volta ao primeiro (loop infinito).
+  readonly sequence: AnimationStep[] = [
+    {
+      rows: [13],
+      framesPerRow: 8,
+      fps: 0.5,            // 1 frame a cada 2 segundos
+      durationSeconds: 10, // 1 minuto sentado
+      label: 'sit',
+    },
+    {
+      rows: [18, 19],      // percorre linha 18 completa, depois linha 19, em loop
+      framesPerRow: 5,
+      fps: 2,              // 2 frames por segundo
+      durationSeconds: 300,// 5 minutos
+      label: 'play',
+    },
+    {
+      rows: [20],
+      framesPerRow: 5,
+      fps: 1,              // 1 frame por segundo
+      durationSeconds: 60, // 1 minuto
+      label: 'walk',
+    },
+  ];
+
+  readonly mascotService = inject(MascotService);
+
+  // ─── Estado interno ───────────────────────────────────────────────────────
+  currentStepIndex = signal(0);
+  currentRowIndex  = signal(0);
+  currentFrame     = signal(0);
+
+  private frameTimer?: ReturnType<typeof setInterval>;
+  private stepTimer?:  ReturnType<typeof setTimeout>;
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  private get step(): AnimationStep {
+    return this.sequence[this.currentStepIndex()];
+  }
+
+  private get activeRow(): number {
+    return this.step.rows[this.currentRowIndex()];
+  }
+
+  private get framesInRow(): number {
+    const f = this.step.framesPerRow;
+    return Array.isArray(f) ? f[this.currentRowIndex()] : f;
+  }
+
+  // ─── Estilo do sprite ─────────────────────────────────────────────────────
+  get spriteStyle(): Record<string, string> {
+    const x = -(this.currentFrame() * this.FRAME_WIDTH  * this.SCALE);
+    const y = -(this.activeRow      * this.FRAME_HEIGHT * this.SCALE);
+    return {
+      width:              `${this.FRAME_WIDTH  * this.SCALE}px`,
+      height:             `${this.FRAME_HEIGHT * this.SCALE}px`,
+      backgroundImage:    `url('assets/images/mascot.png')`,
+      backgroundSize:     `${this.FRAME_WIDTH * this.SHEET_COLS * this.SCALE}px auto`,
+      backgroundPosition: `${x}px ${y}px`,
+      backgroundRepeat:   'no-repeat',
+      imageRendering:     'pixelated',
+    };
+  }
+
+  // ─── Lifecycle ────────────────────────────────────────────────────────────
+  ngOnInit(): void {
+    this.startStep(0);
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.frameTimer);
+    clearTimeout(this.stepTimer);
+  }
+
+  // ─── Player de sequência ──────────────────────────────────────────────────
+  private startStep(index: number): void {
+    clearInterval(this.frameTimer);
+    clearTimeout(this.stepTimer);
+
+    this.currentStepIndex.set(index);
+    this.currentRowIndex.set(0);
+    this.currentFrame.set(0);
+
+    const step = this.sequence[index];
+
+    this.frameTimer = setInterval(() => {
+      const next = this.currentFrame() + 1;
+      if (next < this.framesInRow) {
+        this.currentFrame.set(next);
+      } else {
+        // terminou os frames desta linha → avança para a próxima linha do passo
+        const nextRow = (this.currentRowIndex() + 1) % step.rows.length;
+        this.currentRowIndex.set(nextRow);
+        this.currentFrame.set(0);
+      }
+    }, 1000 / step.fps);
+
+    // avança para o próximo passo após durationSeconds
+    this.stepTimer = setTimeout(() => {
+      this.startStep((index + 1) % this.sequence.length);
+    }, step.durationSeconds * 1000);
+  }
+}
