@@ -130,7 +130,7 @@
             </div>
             <div class="progress-track">
               <div class="progress-fill"
-                   [style.width]="d.fracao_percentual"
+                   [style.width]="d.fracao_percentual || '0%'"
                    [style.background]="disciplineColor(i)">
               </div>
             </div>
@@ -169,6 +169,7 @@
           <button *ngFor="let mes of diasPorMes"
                   class="mes-pill"
                   [class.active]="isMesExpandido(mes.chave)"
+                  [attr.aria-label]="mes.titulo"
                   (click)="scrollToMes(mes.chave)">
             {{ mesAbreviation(mes.titulo) }}
           </button>
@@ -178,7 +179,9 @@
         <div class="meses-container">
           <div class="mes-section" *ngFor="let mes of diasPorMes" [id]="'mes-' + mes.chave">
 
-            <button class="mes-header" (click)="toggleMes(mes.chave)">
+            <button class="mes-header"
+                    (click)="toggleMes(mes.chave)"
+                    [attr.aria-expanded]="isMesExpandido(mes.chave)">
               <div class="mes-header-left">
                 <span class="mes-titulo">{{ mes.titulo }}</span>
                 <span class="mes-count">{{ mes.dias.length }} dia{{ mes.dias.length !== 1 ? 's' : '' }}</span>

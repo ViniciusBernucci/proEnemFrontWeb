@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CronogramaService } from '../../../core/services/cronograma.service';
@@ -22,6 +23,7 @@ export class VisualizarCronogramaComponent implements OnInit {
   private router = inject(Router);
   private cronogramaService = inject(CronogramaService);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   cronograma: CronogramaResponse | null = null;
   json: CronogramaJson | null = null;
@@ -45,8 +47,13 @@ export class VisualizarCronogramaComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.cronogramaService.obterCronograma(id).subscribe({
+    const raw = this.route.snapshot.paramMap.get('id');
+    const id = raw ? Number(raw) : NaN;
+    if (!id || isNaN(id)) {
+      this.router.navigate(['/simulados/listar']);
+      return;
+    }
+    this.cronogramaService.obterCronograma(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.cronograma = data;
         this.json = data.cronograma_json ?? null;
@@ -100,9 +107,8 @@ export class VisualizarCronogramaComponent implements OnInit {
   scrollToMes(chave: string): void {
     this.mesesExpandidos.add(chave);
     this.cdr.markForCheck();
-    setTimeout(() => {
-      document.getElementById(`mes-${chave}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
+    this.cdr.detectChanges();
+    document.getElementById(`mes-${chave}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   get slotsRevisao(): number {
@@ -112,6 +118,8 @@ export class VisualizarCronogramaComponent implements OnInit {
   }
 
   get horasPorDia(): string {
+    const horasJson = this.json?.resumo?.periodo?.horas_por_dia;
+    if (horasJson != null) return `${horasJson}h`;
     const min = this.cronograma?.minutos_estudo_por_dia ?? 0;
     const h = Math.floor(min / 60);
     const m = min % 60;
