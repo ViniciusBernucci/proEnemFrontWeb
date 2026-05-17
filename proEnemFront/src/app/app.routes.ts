@@ -49,6 +49,11 @@ export const routes: Routes = [
             canActivate: [authGuard],
             loadComponent: () => import('./pages/cronograma/novo-cronograma/novo-cronograma.component').then((m) => m.NovoCronogramaComponent),
           },
+          {
+            path: ':id/visualizar',
+            canActivate: [authGuard],
+            loadComponent: () => import('./pages/cronograma/visualizar-cronograma/visualizar-cronograma.component').then((m) => m.VisualizarCronogramaComponent),
+          },
         ],
       },
       {

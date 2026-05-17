@@ -69,7 +69,7 @@ export class ListarCronogramaComponent implements OnInit {
   }
 
   verCronograma(id: number): void {
-    this.router.navigate(['/simulados', id]);
+    this.router.navigate(['/simulados', id, 'visualizar']);
   }
 
   deletarCronograma(cronograma: CronogramaListItem): void {
