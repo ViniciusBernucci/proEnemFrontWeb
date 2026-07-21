@@ -1,0 +1,231 @@
+<div class="visualizar-page">
+
+  <!-- ── Loading ──────────────────────────────────────────────────── -->
+  <div *ngIf="isLoading" class="spinner-wrap">
+    <div class="spinner"></div>
+    <p class="spinner-label">Carregando cronograma…</p>
+  </div>
+
+  <!-- ── Erro ─────────────────────────────────────────────────────── -->
+  <div *ngIf="!isLoading && errorMessage" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Não foi possível carregar</h3>
+    <p>{{ errorMessage }}</p>
+    <button class="btn-back-error" (click)="voltar()">← Voltar para meus cronogramas</button>
+  </div>
+
+  <!-- ── Conteúdo principal ────────────────────────────────────────── -->
+  <ng-container *ngIf="!isLoading && !errorMessage">
+
+    <!-- Hero ──────────────────────────────────────────────────────── -->
+    <div class="hero-card">
+      <button class="btn-back" (click)="voltar()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Meus Cronogramas
+      </button>
+
+      <div class="hero-body">
+        <div class="hero-info">
+          <div class="hero-badges">
+            <span class="badge-ativo" *ngIf="cronograma?.ativo">✦ Ativo</span>
+            <span class="badge-periodo">
+              {{ formatarData(cronograma?.data_inicio) }} → {{ formatarData(cronograma?.data_fim) }}
+            </span>
+          </div>
+          <h1 class="hero-title">{{ cronograma?.nome }}</h1>
+          <p class="hero-sub">
+            <span class="hero-sub-item">🕐 {{ horasPorDia }} de estudo por dia</span>
+            <span class="hero-divider">·</span>
+            <span class="hero-sub-item">📅 {{ json?.resumo?.total_dias_estudo ?? '—' }} dias de estudo</span>
+            <span class="hero-divider">·</span>
+            <span class="hero-sub-item">📚 {{ json?.resumo?.total_slots ?? '—' }} aulas no total</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Decoração visual -->
+      <div class="hero-decoration">
+        <div class="deco-circle deco-1"></div>
+        <div class="deco-circle deco-2"></div>
+        <div class="deco-circle deco-3"></div>
+      </div>
+    </div>
+
+    <!-- Alertas ────────────────────────────────────────────────────── -->
+    <div *ngIf="json?.alertas?.length" class="alertas-banner">
+      <span class="alertas-icon">⚠️</span>
+      <div class="alertas-content">
+        <strong>Atenção</strong>
+        <ul>
+          <li *ngFor="let a of json!.alertas">{{ a }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sem JSON ────────────────────────────────────────────────────── -->
+    <div *ngIf="!json" class="state-box">
+      <div class="state-icon">⏳</div>
+      <h3>Cronograma ainda sendo processado</h3>
+      <p>O algoritmo ainda está gerando seu plano de estudos. Tente novamente em instantes.</p>
+    </div>
+
+    <ng-container *ngIf="json">
+
+      <!-- Stats grid ─────────────────────────────────────────────── -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap">📚</div>
+          <div class="stat-value">{{ json.resumo.slots_conteudo }}</div>
+          <div class="stat-label">Conteúdos novos</div>
+          <div class="stat-accent accent-blue"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap">🔄</div>
+          <div class="stat-value">{{ slotsRevisao }}</div>
+          <div class="stat-label">Revisões espaçadas</div>
+          <div class="stat-accent accent-amber"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap">📝</div>
+          <div class="stat-value">{{ json.resumo.total_simulados }}</div>
+          <div class="stat-label">Simulados</div>
+          <div class="stat-accent accent-green"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap">✍️</div>
+          <div class="stat-value">{{ json.resumo.total_redacoes }}</div>
+          <div class="stat-label">Redações</div>
+          <div class="stat-accent accent-purple"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap">🎯</div>
+          <div class="stat-value">{{ json.resumo.total_topicos_incluidos }}</div>
+          <div class="stat-label">Tópicos incluídos</div>
+          <div class="stat-accent accent-indigo"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap">⏱️</div>
+          <div class="stat-value">{{ json.resumo.periodo.horas_por_dia }}h</div>
+          <div class="stat-label">Horas por dia</div>
+          <div class="stat-accent accent-teal"></div>
+        </div>
+      </div>
+
+      <!-- Distribuição de disciplinas ────────────────────────────── -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Distribuição por Disciplina</h2>
+          <span class="section-sub">{{ json.resumo.disciplinas.length }} disciplinas no plano</span>
+        </div>
+
+        <div class="disciplinas-grid">
+          <div class="disciplina-item" *ngFor="let d of json.resumo.disciplinas; let i = index">
+            <div class="disciplina-row">
+              <div class="disciplina-dot" [style.background]="disciplineColor(i)"></div>
+              <span class="disciplina-nome">{{ formatarDisciplina(d.slug) }}</span>
+              <span class="disciplina-meta">{{ d.slots_alocados }} aulas · {{ d.topicos_incluidos }} tópicos</span>
+              <span class="disciplina-pct">{{ d.fracao_percentual }}</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill"
+                   [style.width]="d.fracao_percentual || '0%'"
+                   [style.background]="disciplineColor(i)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendário ──────────────────────────────────────────────── -->
+      <div class="section-card" *ngIf="diasPorMes.length > 0">
+        <div class="section-header">
+          <h2 class="section-title">Calendário de Estudos</h2>
+
+          <!-- Legenda de tipos -->
+          <div class="legenda">
+            <span class="leg-item">
+              <span class="leg-dot tipo-conteudo_novo"></span>
+              <span>Conteúdo novo</span>
+            </span>
+            <span class="leg-item">
+              <span class="leg-dot tipo-revisao"></span>
+              <span>Revisão</span>
+            </span>
+            <span class="leg-item">
+              <span class="leg-dot tipo-simulado"></span>
+              <span>Simulado</span>
+            </span>
+            <span class="leg-item">
+              <span class="leg-dot tipo-redacao"></span>
+              <span>Redação</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Navegação rápida por mês -->
+        <div class="meses-nav">
+          <button *ngFor="let mes of diasPorMes"
+                  class="mes-pill"
+                  [class.active]="isMesExpandido(mes.chave)"
+                  [attr.aria-label]="mes.titulo"
+                  (click)="scrollToMes(mes.chave)">
+            {{ mesAbreviation(mes.titulo) }}
+          </button>
+        </div>
+
+        <!-- Meses ─────────────────────────────────────────────────── -->
+        <div class="meses-container">
+          <div class="mes-section" *ngFor="let mes of diasPorMes" [id]="'mes-' + mes.chave">
+
+            <button class="mes-header"
+                    (click)="toggleMes(mes.chave)"
+                    [attr.aria-expanded]="isMesExpandido(mes.chave)">
+              <div class="mes-header-left">
+                <span class="mes-titulo">{{ mes.titulo }}</span>
+                <span class="mes-count">{{ mes.dias.length }} dia{{ mes.dias.length !== 1 ? 's' : '' }}</span>
+              </div>
+              <span class="mes-chevron" [class.open]="isMesExpandido(mes.chave)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+
+            <div class="mes-body" *ngIf="isMesExpandido(mes.chave)">
+              <div class="dias-list">
+
+                <div class="dia-card" *ngFor="let dia of mes.dias">
+                  <!-- Data badge -->
+                  <div class="dia-badge">
+                    <span class="dia-num">{{ diaDaData(dia.data) }}</span>
+                    <span class="dia-dow">{{ formatarDiaSemana(dia.dia_semana) }}</span>
+                  </div>
+
+                  <!-- Aulas -->
+                  <div class="aulas-col">
+                    <div class="aula-item"
+                         *ngFor="let aula of dia.aulas"
+                         [class]="'aula-item tipo-' + aula.tipo">
+                      <div class="aula-tipo-strip"></div>
+                      <span class="aula-tipo-label">{{ labelTipo(aula.tipo) }}</span>
+                      <div class="aula-conteudo">
+                        <span class="aula-disciplina">{{ formatarDisciplina(aula.disciplina) }}</span>
+                        <span class="aula-topico" [title]="aula.topico">{{ aula.topico }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+</div>
