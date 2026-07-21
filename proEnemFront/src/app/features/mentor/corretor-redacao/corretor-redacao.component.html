@@ -1,0 +1,76 @@
+<div class="corretor-container">
+  <div class="corretor-header">
+    <div class="mentor-info">
+      <div class="avatar">📝</div>
+      <div class="titles">
+        <h2>Corretor de Redação IA</h2>
+        <span class="status-online"><span class="dot"></span> Em breve: correção automática por IA</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="corretor-body">
+    <p class="descricao">
+      Envie sua redação em <strong>.docx</strong>, <strong>.pdf</strong> ou <strong>.txt</strong> para que nosso
+      Mentor de Estudos possa avaliá-la em breve. Por enquanto, apenas o envio dos arquivos está disponível.
+    </p>
+
+    <ngx-dropzone
+      (change)="onSelect($event)"
+      [accept]="accept"
+      [maxFileSize]="maxFileSize"
+      class="redacao-upload"
+      [multiple]="true">
+      <ngx-dropzone-label class="drop-browse">
+        <i class="ti ti-upload upload-icon"></i>
+        <div class="drop-text">Arraste seus arquivos aqui ou <span class="text-primary">clique para selecionar</span></div>
+        <span class="text-muted">Formatos aceitos: {{ extensoesAceitas }} · Máximo 10MB por arquivo</span>
+      </ngx-dropzone-label>
+    </ngx-dropzone>
+
+    @if (erro) {
+      <div class="alert-erro">
+        <i class="ti ti-alert-circle"></i>
+        <span>{{ erro }}</span>
+      </div>
+    }
+
+    @if (arquivos.length > 0) {
+      <ul class="arquivos-lista">
+        @for (arquivo of arquivos; track arquivo) {
+          <li class="arquivo-item">
+            <i class="ti" [class]="iconeArquivo(arquivo)"></i>
+            <div class="arquivo-info">
+              <span class="arquivo-nome">{{ arquivo.name }}</span>
+              <span class="arquivo-tamanho">{{ formatarTamanho(arquivo.size) }}</span>
+            </div>
+            <button type="button" class="remover-btn" (click)="onRemover(arquivo)" [disabled]="isEnviando">
+              <i class="ti ti-x"></i>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (resultado) {
+      <div class="resultado-card">
+        <i class="ti ti-circle-check"></i>
+        <span>{{ resultado.mensagem }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="corretor-footer">
+    <button
+      type="button"
+      class="enviar-btn"
+      [disabled]="arquivos.length === 0 || isEnviando"
+      (click)="enviarParaCorrecao()">
+      @if (isEnviando) {
+        <span class="spinner"></span> Enviando...
+      } @else {
+        <i class="ti ti-send"></i> Enviar para correção
+      }
+    </button>
+  </div>
+</div>

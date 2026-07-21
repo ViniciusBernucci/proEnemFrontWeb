@@ -74,6 +74,11 @@ export const routes: Routes = [
             canActivate: [authGuard],
             loadComponent: () => import('./features/mentor/chat/chat.component').then((m) => m.ChatComponent),
           },
+          {
+            path: 'corretor-redacao',
+            canActivate: [authGuard],
+            loadComponent: () => import('./features/mentor/corretor-redacao/corretor-redacao.component').then((m) => m.CorretorRedacaoComponent),
+          },
         ],
       },
     ],

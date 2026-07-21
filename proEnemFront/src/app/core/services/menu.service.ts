@@ -94,6 +94,7 @@ export class MenuService {
           showSubRoute: false,
           subMenus: [
             { menuValue: 'Iniciar Chat', route: '/mentor/chat', base: 'chat' },
+            { menuValue: 'Corretor de redação IA', route: '/mentor/corretor-redacao', base: 'corretor-redacao' },
           ],
         },
       ],
