@@ -1,0 +1,40 @@
+<div class="configuracoes-container">
+  <div class="configuracoes-header">
+    <h2>Configurações da conta</h2>
+    <p class="subtitulo">Gerencie seus dados pessoais e veja as informações do seu plano.</p>
+  </div>
+
+  <div class="configuracoes-tabs" role="tablist">
+    <button
+      type="button"
+      role="tab"
+      class="tab-btn"
+      [class.active]="abaAtiva() === 'meus-dados'"
+      [attr.aria-selected]="abaAtiva() === 'meus-dados'"
+      (click)="selecionarAba('meus-dados')">
+      <i class="ti ti-user-circle"></i>
+      Meus dados
+    </button>
+    <button
+      type="button"
+      role="tab"
+      class="tab-btn"
+      [class.active]="abaAtiva() === 'meu-plano'"
+      [attr.aria-selected]="abaAtiva() === 'meu-plano'"
+      (click)="selecionarAba('meu-plano')">
+      <i class="ti ti-crown"></i>
+      Meu plano
+    </button>
+  </div>
+
+  <div class="configuracoes-content">
+    @switch (abaAtiva()) {
+      @case ('meus-dados') {
+        <app-meus-dados />
+      }
+      @case ('meu-plano') {
+        <app-meu-plano />
+      }
+    }
+  </div>
+</div>

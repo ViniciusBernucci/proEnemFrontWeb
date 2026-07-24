@@ -1,0 +1,29 @@
+<div class="meu-plano">
+  <div class="card-secao plano-card">
+    <div class="plano-header">
+      <span class="plano-badge"><i class="ti ti-crown"></i> Plano atual</span>
+      <h3 class="plano-nome">{{ plano.nome }}</h3>
+      <p class="plano-descricao">{{ plano.descricao }}</p>
+    </div>
+
+    <div class="plano-preco">
+      <span class="preco-valor">{{ plano.preco }}</span>
+      <span class="preco-periodo">{{ plano.periodicidade }}</span>
+    </div>
+
+    <ul class="plano-recursos">
+      @for (recurso of plano.recursos; track recurso) {
+        <li><i class="ti ti-check"></i> {{ recurso }}</li>
+      }
+    </ul>
+
+    @if (plano.dataRenovacao) {
+      <p class="plano-renovacao">Próxima renovação em {{ plano.dataRenovacao }}</p>
+    }
+
+    <div class="plano-aviso">
+      <i class="ti ti-info-circle"></i>
+      <span>Em breve você poderá comparar e fazer upgrade de plano por aqui.</span>
+    </div>
+  </div>
+</div>

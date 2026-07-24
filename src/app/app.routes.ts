@@ -81,6 +81,11 @@ export const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'configuracoes',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/configuracoes/configuracoes.component').then((m) => m.ConfiguracoesComponent),
+      },
     ],
   },
 ];

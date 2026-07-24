@@ -109,6 +109,12 @@
           <li class="menu-title"><span>CONTA</span></li>
           <li>
             <ul>
+              <li [class.active]="base === 'configuracoes'">
+                <a routerLink="/configuracoes">
+                  <i class="ti ti-settings"></i>
+                  <span>Configurações</span>
+                </a>
+              </li>
               <li>
                 <a href="javascript:void(0)" (click)="logout()" class="text-danger">
                   <i class="ti ti-logout"></i>

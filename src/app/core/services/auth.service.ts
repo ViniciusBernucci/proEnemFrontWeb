@@ -97,6 +97,15 @@ export class AuthService {
     return this._token();
   }
 
+  updateCurrentUser(partial: Partial<AuthUser>): void {
+    const usuarioAtual = this._user();
+    if (!usuarioAtual) return;
+
+    const usuarioAtualizado = { ...usuarioAtual, ...partial };
+    this._user.set(usuarioAtualizado);
+    localStorage.setItem(USER_KEY, JSON.stringify(usuarioAtualizado));
+  }
+
   private persist(res: AuthResponse): void {
     this._token.set(res.access_token);
     this._user.set(res.user);
