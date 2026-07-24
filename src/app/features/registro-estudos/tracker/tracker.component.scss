@@ -336,6 +336,180 @@
   }
 }
 
+// Shared nav (Monthly & Yearly)
+.period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #4b5563;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+  }
+
+  .period-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    text-transform: capitalize;
+
+    .today-btn {
+      border: 1px solid #d1d5db;
+      background: transparent;
+      color: #4f46e5;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #eef2ff;
+        border-color: #818cf8;
+      }
+    }
+  }
+}
+
+// Monthly View
+.monthly-view {
+  .month-weekday-labels {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .month-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1px solid #f3f4f6;
+    border-radius: 10px;
+    background: #ffffff;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.2s ease;
+
+    &.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+
+    .cell-day {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .cell-tasks-count {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6366f1;
+      background: #eef2ff;
+      padding: 1px 6px;
+      border-radius: 999px;
+    }
+
+    &:hover:not(.empty) {
+      border-color: #c7d2fe;
+      transform: translateY(-1px);
+    }
+
+    &.is-today {
+      border-color: #4f46e5;
+      .cell-day { color: #4f46e5; }
+    }
+
+    &.selected {
+      background: rgba(99, 102, 241, 0.1);
+      box-shadow: inset 0 0 0 1px #818cf8;
+    }
+
+    &.has-tasks .cell-day {
+      font-weight: 700;
+    }
+  }
+}
+
+// Yearly View
+.yearly-view {
+  .year-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .month-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border-color: #e5e7eb;
+    }
+
+    .month-card-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1f2937;
+      text-transform: capitalize;
+    }
+
+    .month-card-stats {
+      font-size: 12px;
+      color: #6b7280;
+    }
+  }
+}
+
+.progress-bar-bg.small {
+  height: 6px;
+}
+
 @media (max-width: 768px) {
   .weekly-view {
     justify-content: flex-start;
@@ -344,6 +518,12 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 4px !important;
+  }
+  .year-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .period-nav .period-label {
+    font-size: 15px;
   }
 }
 
@@ -421,5 +601,47 @@
   .selected-day-details {
     border-top-color: #4b5563;
     .details-title { color: #d1d5db; }
+  }
+
+  .period-nav {
+    .nav-btn {
+      background: #374151;
+      color: #d1d5db;
+      &:hover { background: #4b5563; color: #818cf8; }
+    }
+    .period-label {
+      color: #f9fafb;
+      .today-btn {
+        border-color: #4b5563;
+        color: #818cf8;
+        &:hover { background: #4b5563; border-color: #6366f1; }
+      }
+    }
+  }
+
+  .monthly-view {
+    .month-weekday-labels { color: #6b7280; }
+    .month-cell {
+      background: #374151;
+      border-color: #4b5563;
+      .cell-day { color: #e5e7eb; }
+      &:hover:not(.empty) { border-color: #6366f1; }
+      &.is-today {
+        border-color: #818cf8;
+        .cell-day { color: #818cf8; }
+      }
+      &.selected { background: rgba(99, 102, 241, 0.15); box-shadow: inset 0 0 0 1px #6366f1; }
+      .cell-tasks-count { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+    }
+  }
+
+  .yearly-view {
+    .month-card {
+      background: #374151;
+      border-color: #4b5563;
+      &:hover { border-color: #6b7280; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+      .month-card-label { color: #e5e7eb; }
+      .month-card-stats { color: #9ca3af; }
+    }
   }
 }

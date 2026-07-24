@@ -3,7 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CronogramaService } from '../../../core/services/cronograma.service';
-import { CronogramaResponse, CronogramaJson, DiaCronograma } from '../../../core/models/cronograma.model';
+import {
+  CronogramaResponse,
+  CronogramaJson,
+  DiaCronograma,
+} from '../../../core/models/cronograma.model';
 
 interface MesGroup {
   chave: string;
@@ -33,17 +37,36 @@ export class VisualizarCronogramaComponent implements OnInit {
   mesesExpandidos = new Set<string>();
 
   private readonly DISCIPLINA_LABELS: Record<string, string> = {
-    matematica: 'Matemática', portugues: 'Português', literatura: 'Literatura',
-    ingles: 'Inglês', espanhol: 'Espanhol', redacao: 'Redação',
-    fisica: 'Física', quimica: 'Química', biologia: 'Biologia',
-    historia: 'História', geografia: 'Geografia', filosofia: 'Filosofia',
-    sociologia: 'Sociologia', simulado: 'Simulado',
+    matematica: 'Matemática',
+    portugues: 'Português',
+    literatura: 'Literatura',
+    ingles: 'Inglês',
+    espanhol: 'Espanhol',
+    redacao: 'Redação',
+    fisica: 'Física',
+    quimica: 'Química',
+    biologia: 'Biologia',
+    historia: 'História',
+    geografia: 'Geografia',
+    filosofia: 'Filosofia',
+    sociologia: 'Sociologia',
+    simulado: 'Simulado',
   };
 
   private readonly PALETTE = [
-    '#6366f1', '#3b82f6', '#0ea5e9', '#10b981', '#f59e0b',
-    '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316',
-    '#84cc16', '#06b6d4', '#a855f7',
+    '#6366f1',
+    '#3b82f6',
+    '#0ea5e9',
+    '#10b981',
+    '#f59e0b',
+    '#ef4444',
+    '#8b5cf6',
+    '#ec4899',
+    '#14b8a6',
+    '#f97316',
+    '#84cc16',
+    '#06b6d4',
+    '#a855f7',
   ];
 
   ngOnInit(): void {
@@ -53,23 +76,26 @@ export class VisualizarCronogramaComponent implements OnInit {
       this.router.navigate(['/simulados/listar']);
       return;
     }
-    this.cronogramaService.obterCronograma(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (data) => {
-        this.cronograma = data;
-        this.json = data.cronograma_json ?? null;
-        this.diasPorMes = this.agruparPorMes(this.json?.cronograma ?? []);
-        if (this.diasPorMes.length > 0) {
-          this.mesesExpandidos.add(this.diasPorMes[0].chave);
-        }
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message ?? 'Não foi possível carregar o cronograma.';
-        this.cdr.markForCheck();
-      },
-    });
+    this.cronogramaService
+      .obterCronograma(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.cronograma = data;
+          this.json = data.cronograma_json ?? null;
+          this.diasPorMes = this.agruparPorMes(this.json?.cronograma ?? []);
+          if (this.diasPorMes.length > 0) {
+            this.mesesExpandidos.add(this.diasPorMes[0].chave);
+          }
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.message ?? 'Não foi possível carregar o cronograma.';
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   private agruparPorMes(dias: DiaCronograma[]): MesGroup[] {
@@ -144,12 +170,20 @@ export class VisualizarCronogramaComponent implements OnInit {
 
   formatarDiaSemana(dia: string): string {
     const mapa: Record<string, string> = {
-      domingo: 'Dom', segunda: 'Seg', 'segunda-feira': 'Seg',
-      terca: 'Ter', 'terça': 'Ter', 'terça-feira': 'Ter',
-      quarta: 'Qua', 'quarta-feira': 'Qua',
-      quinta: 'Qui', 'quinta-feira': 'Qui',
-      sexta: 'Sex', 'sexta-feira': 'Sex',
-      sabado: 'Sáb', 'sábado': 'Sáb',
+      domingo: 'Dom',
+      segunda: 'Seg',
+      'segunda-feira': 'Seg',
+      terca: 'Ter',
+      terça: 'Ter',
+      'terça-feira': 'Ter',
+      quarta: 'Qua',
+      'quarta-feira': 'Qua',
+      quinta: 'Qui',
+      'quinta-feira': 'Qui',
+      sexta: 'Sex',
+      'sexta-feira': 'Sex',
+      sabado: 'Sáb',
+      sábado: 'Sáb',
     };
     return mapa[dia.toLowerCase()] ?? dia.substring(0, 3);
   }
@@ -160,8 +194,10 @@ export class VisualizarCronogramaComponent implements OnInit {
 
   labelTipo(tipo: string): string {
     const mapa: Record<string, string> = {
-      conteudo_novo: 'Novo', revisao: 'Revisão',
-      simulado: 'Simulado', redacao: 'Redação',
+      conteudo_novo: 'Novo',
+      revisao: 'Revisão',
+      simulado: 'Simulado',
+      redacao: 'Redação',
     };
     return mapa[tipo] ?? tipo;
   }
