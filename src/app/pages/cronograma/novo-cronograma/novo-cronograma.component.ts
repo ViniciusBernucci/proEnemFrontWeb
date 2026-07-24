@@ -67,6 +67,9 @@ export class NovoCronogramaComponent implements OnInit {
   // Etapa 3 - Disciplinas (carregadas da API)
   disciplinas: Disciplina[] = [];
 
+  // Idiomas mutuamente exclusivos: o ENEM permite apenas uma língua estrangeira
+  private readonly idiomasExclusivos = ['Inglês', 'Espanhol'];
+
   ngOnInit(): void {
     this.disciplinaService.listarDisciplinas()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -86,6 +89,18 @@ export class NovoCronogramaComponent implements OnInit {
 
   disciplinasPorArea(area: string): Disciplina[] {
     return this.disciplinas.filter((d) => d.area === area);
+  }
+
+  toggleDisciplina(disciplina: Disciplina): void {
+    const vaiSelecionar = !disciplina.selecionada;
+
+    if (vaiSelecionar && this.idiomasExclusivos.includes(disciplina.nome)) {
+      this.disciplinas
+        .filter((d) => d !== disciplina && this.idiomasExclusivos.includes(d.nome))
+        .forEach((d) => (d.selecionada = false));
+    }
+
+    disciplina.selecionada = vaiSelecionar;
   }
 
   get disciplinasSelecionadas(): Disciplina[] {

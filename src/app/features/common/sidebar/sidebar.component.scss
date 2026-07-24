@@ -2,7 +2,13 @@
   .logo img,
   .logo-small img,
   .dark-logo img {
-    max-height: 48px;
+    // Limitada pela largura do menu (encolhe no mini) e por um teto de altura
+    // (cresce ate a topbar no completo), sempre mantendo a proporcao da imagem.
     width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 48px;
+    object-fit: contain;
+    transition: max-width 0.25s ease-in-out;
   }
 }

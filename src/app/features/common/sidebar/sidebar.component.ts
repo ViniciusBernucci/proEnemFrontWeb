@@ -8,7 +8,6 @@ import { CommonService } from '../../../shared/common/common.service';
 import { menu, MenuItem, sidebarDataone, SubMenu, subMenus, url } from '../../../shared/model/sidebar.model';
 import { CommonModule } from '@angular/common';
 import { NgScrollbarModule } from 'ngx-scrollbar';
-import { SettingsService } from '../../../shared/settings/settings.service';
 import { MenuService } from '../../../core/services/menu.service';
 import { AuthService } from '../../../core/services/auth.service';
 @Component({
@@ -34,7 +33,6 @@ export class SidebarComponent  {
     private sidebar: SidebarService,
     private router: Router,
     private common: CommonService,
-    private settings: SettingsService,
     private menuService: MenuService,
     private authService: AuthService,
   ) {
@@ -80,15 +78,9 @@ export class SidebarComponent  {
       this.sidebar.expandSideBar.next('false');
     }
   }
-     onToggleSidebar(): void {
-  const layout = document.documentElement.getAttribute('data-layout');
-
-  if (layout === 'hidden') {
-    this.settings.togglehidden();
-  } else {
+  onToggleSidebar(): void {
     this.toggleSidebarmini();
   }
-}
 toggleSidebar(): void {
   const wrapper = document.getElementsByClassName('main-wrapper')[0];
   const overlay = document.getElementsByClassName('sidebar-overlay')[0];

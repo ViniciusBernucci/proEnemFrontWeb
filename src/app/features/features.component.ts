@@ -2,12 +2,10 @@ import { Component, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router, Event as RouterEvent, RouterModule } from '@angular/router';
 import { SidebarService } from '../shared/sidebar/sidebar.service';
 import { CommonService } from '../shared/common/common.service';
-import { SettingsService } from '../shared/settings/settings.service';
 import { Title } from '@angular/platform-browser';
 import { url } from '../shared/model/sidebar.model';
 import { MenuService } from '../core/services/menu.service';
 import { CommonModule } from '@angular/common';
-import { LayoutComponent } from './common/layout/layout.component';
 import { SidebarComponent } from './common/sidebar/sidebar.component';
 import { HeaderComponent } from './common/header/header.component';
 import { MenuItem } from 'primeng/api';
@@ -21,7 +19,7 @@ export interface RouterObject {
 }
 @Component({
   selector: 'app-features',
-  imports: [RouterModule,CommonModule,LayoutComponent,SidebarComponent,HeaderComponent,MascotComponent],
+  imports: [RouterModule,CommonModule,SidebarComponent,HeaderComponent,MascotComponent],
   templateUrl: './features.component.html',
   styleUrl: './features.component.scss'
 })
@@ -35,14 +33,12 @@ export class FeaturesComponent implements OnInit {
   page = '';
   last = '';
   currentUrl = '';
-layoutMode = '';
   constructor(
     private sideBar: SidebarService,
     public router: Router,
     private menuService: MenuService,
     private breakpointObserver: BreakpointObserver,
-    private common: CommonService,
-    private settings: SettingsService
+    private common: CommonService
   ) {
     this.router.events.pipe(
   filter(event => event instanceof NavigationEnd)
@@ -109,17 +105,6 @@ layoutMode = '';
         this.mobileSidebar = 'false';
       }
     });
-    this.settings.layoutMode.subscribe((layout) => {
-      this.layoutMode = layout;
-      if (layout == 'mini') {
-        this.miniSidebar = 'true';
-      } else if (!localStorage.getItem('isMiniSidebar')) {
-        this.miniSidebar = 'false';
-      }
-    });
-
-
-       
   }
   public toggleMobileSideBar(): void {
     this.sideBar.switchMobileSideBarPosition();

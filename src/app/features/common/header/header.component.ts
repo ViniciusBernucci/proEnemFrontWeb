@@ -102,16 +102,6 @@ export class HeaderComponent {
     
   }
 
-  public miniSideBarMouseHover(position: string): void {
-    if(this.settings.SideBarMouseHover===true){
-      if (position == 'over') {
-        this.sidebar.expandSideBar.next('true');
-      } else {
-        this.sidebar.expandSideBar.next('false');
-      }
-    }
-  }
-  
   changeTheme(): void {
     this.settings.changeThemeColor(this.themeMode === 'light' ? 'dark' : 'light');
   }
